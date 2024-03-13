@@ -1,0 +1,4 @@
+conf/local/*
+!conf/local/.gitkeep
+/.venv/
+/.idea/
