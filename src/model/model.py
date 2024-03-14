@@ -4,6 +4,7 @@ from src.model.journal import Journal
 from src.model.ledger import Ledger
 from src.model.money import Money
 
+
 class Model:
     journal = Journal()
     account_names: list
@@ -19,8 +20,8 @@ class Model:
 
         self.ledger = Ledger(self.account_names)
         for index, row in df.iterrows():
-            value = "Debit" if row["amount"] < 0 else "Credit"
-            self.journal.add_transaction(AccountingTransaction(Money(row["amount"]),
+            self.journal.add_transaction(AccountingTransaction(row["transaction_id"],
+                                                               Money(row["amount"]),
                                                                self.ledger.get_account(row["credit_account"]),
                                                                self.ledger.get_account(row["debit_account"]),
                                                                row["date"],
@@ -28,7 +29,8 @@ class Model:
                                                                self.journal,
                                                                row["description"],
                                                                row["member_id"],
-                                                               row["type"]
+                                                               row["type"],
+                                                               row["bank_balance"]
                                                                ))
     def get_account_names(self):
         return self.account_names
@@ -68,8 +70,11 @@ class Model:
     def get_account_proportions_for_current_month(self):
         return self.journal.get_account_proportions_for_current_month(self.account_names)
 
-    def get_current_bank_balance(self):
-        return self.ledger.get_account("Cash").current_balance()
+    def get_latest_cash_at_bank_balance(self):
+        return self.journal.get_latest_cash_at_bank_balance()
+
+
+
 
 
 

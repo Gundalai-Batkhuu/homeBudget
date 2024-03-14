@@ -50,12 +50,12 @@ class Journal:
         return self.sort_transaction_values_by_descending_date(result)
 
     def sort_transaction_values_by_descending_date(self, transactions: list):
-        # Define a custom key function to extract the date from each sublist and reverse the sorting order
-        def get_date(sublist):
-            return sublist[0]
+        # Define a custom key function to extract the id from each transaction
+        def get_id(transaction):
+            return transaction[0]
 
-        # Sort the list of lists using the custom key function
-        return sorted(transactions, key=get_date, reverse=True)
+        # Sort the list of transactions using the custom key function
+        return sorted(transactions, key=get_id, reverse=False)
 
     def sort_transaction_values_by_ascending_date(self, transactions: list):
         # Define a custom key function to extract the date from each sublist and reverse the sorting order
@@ -67,8 +67,8 @@ class Journal:
 
     def calculate_expense_increment_values(self, transactions: []):
         df = pd.DataFrame(self.sort_transaction_values_by_ascending_date(transactions),
-                          columns=['Date', 'From Account', 'To Account', 'Amount', 'Description', 'Account Owner',
-                                   'Type'])
+                          columns=['Id', 'Date', 'From Account', 'To Account', 'Amount', 'Description', 'Account Owner',
+                                   'Type', 'Bank Balance'])
         df = df[df["Type"] == 'Expense']
         df['Expenses'] = df['Amount'].cumsum()
         return df[['Date', 'Expenses']]
@@ -119,6 +119,11 @@ class Journal:
         for i in range(len(result)):
             result[i][1] = float(result[i][1]) / total_expense
         return result
+
+    def get_latest_cash_at_bank_balance(self):
+        return float(self.get_transactions_values()[0][-1])
+
+
 
 
 

@@ -32,5 +32,5 @@ class JournalWindow:
 
     def format_date(self, transaction_values):
         for transaction in transaction_values:
-            transaction[0] = transaction[0].strftime("%d-%m-%Y")
+            transaction[1] = transaction[1].strftime("%d-%m-%Y")
         return transaction_values

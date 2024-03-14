@@ -1,15 +1,15 @@
 import streamlit as st
 
-from src.main.Model.Model import Model
-from src.main.Model.Database import create_db_connection
+from src.model.model import Model
+from src.model.database import create_db_connection
 
 conn = create_db_connection()
 
 model = Model(conn)
 
 
-current_bank_balance = model.get_current_bank_balance()
+latest_cash_at_bank_balance = model.get_latest_cash_at_bank_balance()
 
 st.title('Bank balance')
-st.write(current_bank_balance)
+st.write(latest_cash_at_bank_balance)
 

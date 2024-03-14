@@ -5,7 +5,7 @@ import csv
 import pandas as pd
 
 
-def create_db_connection(credentials_file='conf/local/credentials.json'):
+def create_db_connection(credentials_file='/home/gunee/Projects/Gunee/homeBudget/conf/local/credentials.json'):
     # Load database credentials from the JSON file
     with open(credentials_file, 'r') as file:
         credentials = json.load(file)
@@ -119,3 +119,5 @@ def get_account_names_and_keywords(conn):
 
         # Convert the fetched data to a dictionary
     return {row[0]: row[1] for row in rows}
+
+

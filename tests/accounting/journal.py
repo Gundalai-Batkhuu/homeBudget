@@ -1,7 +1,7 @@
 from datetime import datetime
-from src.main.Model import Account, Money
+from src.model.account import Account, Money
 import unittest
-from src.main.Model.Journal import Journal
+from src.model.journal import Journal
 
 
 class TestAccounting(unittest.TestCase):

@@ -71,6 +71,7 @@ class Account:
 
 
 class AccountingTransaction:
+    id: int
     entries = set()
     date: datetime
     from_acc: Account
@@ -79,8 +80,11 @@ class AccountingTransaction:
     description: str
     account_owner: str
     transaction_type: str
+    bank_balance: Money
 
-    def __init__(self, money: Money,
+    def __init__(self,
+                 transaction_id: int,
+                 money: Money,
                  from_acc: Account,
                  to_acc: Account,
                  date: datetime,
@@ -88,8 +92,10 @@ class AccountingTransaction:
                  journal: Journal,
                  description: str,
                  account_owner: str,
-                 transaction_type: str
+                 transaction_type: str,
+                 bank_balance: Money
                  ):
+        self.id = transaction_id
         self.date = date
         self.from_acc = from_acc
         self.to_acc = to_acc
@@ -97,6 +103,7 @@ class AccountingTransaction:
         self.description = description
         self.account_owner = account_owner
         self.transaction_type = transaction_type
+        self.bank_balance = bank_balance
 
         neg_amount = money.amount * -1
         from_entry = Entry(date, entry_type, Money(neg_amount))
@@ -110,9 +117,9 @@ class AccountingTransaction:
         journal.add_transaction(self)
 
     def get_value(self):
-        # Form: ['Date', 'From Account', 'To Account', 'Amount', 'Description', 'Account owner', 'Type']
-        result = [self.date, self.from_acc.get_name(), self.to_acc.get_name(), self.money.amount, self.description,
-                  self.account_owner, self.transaction_type]
+        # Form: ['Transaction_id', 'Date', 'From Account', 'To Account', 'Amount', 'Description', 'Account owner', 'Type']
+        result = [self.id, self.date, self.from_acc.get_name(), self.to_acc.get_name(), self.money.amount, self.description,
+                  self.account_owner, self.transaction_type, self.bank_balance]
 
         return result
 
