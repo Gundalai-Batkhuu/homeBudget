@@ -1,11 +1,14 @@
-class Money:
-    amount = 0.0
+from decimal import Decimal
 
-    def __init__(self, amount: float):
+
+class Money:
+    amount: Decimal
+
+    def __init__(self, amount: Decimal):
         self.amount = amount
 
-    def add_amount(self, amount: float):
+    def add_amount(self, amount: Decimal):
         self.amount += amount
 
-    def get_amount(self) -> float:
+    def get_amount(self) -> Decimal:
         return self.amount

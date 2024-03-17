@@ -20,7 +20,7 @@ class Entry:
         self.entry_type = entry_type
         self.money = money
 
-    def get_money(self) -> Money:
+    def get_value(self) -> Money:
         return self.money
 
     def get_date(self):

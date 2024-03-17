@@ -13,7 +13,7 @@ class TestAccountNames(unittest.TestCase):
         self.view.run()
 
     def test_account_transaction_values(self):
-        self.assertEqual(self.view.win_account.transaction_values, self.model.journal.get_account_transaction_values(self.view.win_account.account_name))
+        self.assertEqual(self.view.win_account.transaction_values, self.model.journal.get_account_entries(self.view.win_account.account_name))
 
 
 if __name__ == '__main__':

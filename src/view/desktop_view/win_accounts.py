@@ -18,16 +18,15 @@ class AccountsWindow:
     account_names: list
     account_name = ""
     model: Model = None
-    total_account_expenses_for_current_month: list[list]
+    accounts_total_expense_for_current_month: dict
     table_header = ["Account", "Amount", "Date"]
     pie_chart_data: list[list]
 
     def __init__(self, model: Model):
         self.model = model
-        self.account_names = self.model.get_account_names()
-        self.total_account_expenses_for_current_month = model.get_all_accounts_total_expense_for_current_month(
-            self.account_names)
-        self.pie_chart_data = model.get_account_proportions_for_current_month()
+        self.account_names = self.model.get_accounts_info()
+        self.accounts_total_expense_for_current_month = model.get_all_accounts_total_expense_for_current_month()
+        self.pie_chart_data = model.get_account_expense_proportions_for_current_month()
 
         canvas_column = sg.Column([
             [sg.Canvas(key="-CANVAS-")]
@@ -38,13 +37,13 @@ class AccountsWindow:
             [sg.Button('Open account details', key='-ACCOUNT-DETAILS-')]
             ], pad=(0, 0))
 
-        expenses_column = sg.Column([[sg.Table(values=self.total_account_expenses_for_current_month,
+        expenses_column = sg.Column([[sg.Table(values=self.accounts_total_expense_for_current_month,
                                     headings=self.table_header,
                                     max_col_width=25,
                                     auto_size_columns=True,
                                     justification='right',
                                     alternating_row_color='darkblue',
-                                    num_rows=min(len(self.total_account_expenses_for_current_month), 20))]], pad=(0, 0))
+                                    num_rows=min(len(self.accounts_total_expense_for_current_month), 20))]], pad=(0, 0))
         self.layout = [[canvas_column, expenses_column, accounts_column, ], [sg.Button("Home")],
                        [sg.Text('Selected item: '), sg.Text(size=(30, 1), key='-OUTPUT-')]]
 

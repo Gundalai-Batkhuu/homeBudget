@@ -10,7 +10,7 @@ class JournalWindow:
 
     def __init__(self, model):
         self.model = model
-        self.transaction_values = self.model.get_transaction_values()
+        self.transaction_values = self.model.get_transactions()
 
         sg.set_options(element_padding=(0, 0))
 

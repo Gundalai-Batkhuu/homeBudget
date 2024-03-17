@@ -64,7 +64,7 @@ class AccountWindow(View):
         self.account_balance = self.model.get_account_balance(self.account_name)
 
     def set_monthly_account_balance(self, month: str, year: str):
-        self.account_balance = self.model.get_account_balance_for_month(self.account_name, month, year).amount
+        self.account_balance = self.model.get_account_transaction_values_for_month(self.account_name, int(month), int(year)).amount
 
     def format_date(self, transaction_values):
         for transaction in transaction_values:
