@@ -80,3 +80,12 @@ class Model:
 
     def get_latest_cash_at_bank_balance(self):
         return self.journal.get_latest_cash_at_bank_balance()
+
+    def get_all_transactions_for_month(self, month, year):
+        """
+        Get all transactions for a specific month
+        :param month:
+        :param year:
+        :return: A list of all transactions for a specific month
+        """
+        return self.journal.get_all_transactions_for_month(month, year)

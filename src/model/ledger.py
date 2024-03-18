@@ -43,7 +43,7 @@ class Ledger:
         result = {}
         for name, account in self.accounts.items():
             if account.type == "Expense":
-                result[name] = account.get_entries_sum_for_current_month()
+                result[name] = float(account.get_entries_sum_for_current_month())
         return result
 
     def get_account_expense_proportions_for_current_month(self):
@@ -70,5 +70,5 @@ class Ledger:
         for account_name, expense in expense_accounts.items():
             total_expense += expense
         for account_name, expense in expense_accounts.items():
-            result[account_name] = float((expense / total_expense) * 100)
+            result[account_name] = (expense, float((expense / total_expense) * 100))
         return result

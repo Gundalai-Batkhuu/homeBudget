@@ -1,33 +1,23 @@
 import streamlit as st
-
 from src.model.model import Model
 from src.model.database import create_db_connection, close_db_connection
+from streamlit_plots import plot_monthly_expense_treemap_chart, plot_all_transactions_for_month_table
+from datetime import datetime
 
 conn = create_db_connection()
-
 model = Model(conn)
-
+close_db_connection(conn)
 
 latest_cash_at_bank_balance = model.get_latest_cash_at_bank_balance()
+curr_month = datetime.now().month
+curr_year = datetime.now().year
 
 st.title('Bank balance')
 st.write(latest_cash_at_bank_balance)
 
-def get_chart_30299095():
-    import plotly.express as px
-    fig = px.treemap(
-        names = ["Eve","Cain", "Seth", "Enos", "Noam", "Abel", "Awan", "Enoch", "Azura"],
-        parents = ["", "Eve", "Eve", "Seth", "Seth", "Eve", "Eve", "Awan", "Eve"]
-    )
-    fig.update_traces(root_color="lightgrey")
-    fig.update_layout(margin = dict(t=50, l=25, r=25, b=25))
+st.title('Expenses')
+expense_account_proportions = model.get_account_expense_proportions_for_current_month()
+plot_monthly_expense_treemap_chart(expense_account_proportions)
 
-    tab1, tab2 = st.tabs(["Streamlit theme (default)", "Plotly native theme"])
-    with tab1:
-        st.plotly_chart(fig, theme="streamlit")
-    with tab2:
-        st.plotly_chart(fig, theme=None)
-
-get_chart_30299095()
-
-close_db_connection(conn)
+st.title('Transactions list')
+plot_all_transactions_for_month_table(model.get_all_transactions_for_month(curr_month, curr_year))

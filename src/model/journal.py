@@ -40,6 +40,18 @@ class Journal:
         """
         return self.get_transactions()[0].get_bank_balance()
 
+    def get_all_transactions_for_month(self, month: datetime.month, year: datetime.year):
+        """
+        Get all transactions for a specific month
+        :param month:
+        :param year:
+        :return: A list of all transactions for a specific month
+        """
+        transactions = []
+        for transaction in self.transactions:
+            if transaction.get_date().month == month and transaction.get_date().year == year:
+                transactions.append(transaction)
+        return transactions
 
 
 
