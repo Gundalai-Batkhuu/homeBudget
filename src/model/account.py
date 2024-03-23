@@ -90,17 +90,7 @@ class Account:
             result.add_amount(entry.get_value().amount)
         return result.amount
 
-    def get_entries_sum_for_current_month(self):
-        """
-        Get the total monetary amount of all transactions for the current month
-        :return:
-        """
-        month = datetime.now().month
-        year = datetime.now().year
-        return self.calculate_account_entries_sum(
-            self.get_account_entries_for_month(month=month, year=year))
-
-    def get_account_entries_sum_for_month(self, month: int, year: int):
+    def get_account_entries_sum_for_month(self, month: datetime.month, year: datetime.year):
         """
         Get the total monetary amount of all transactions for a specific month
         :param month:
@@ -109,7 +99,6 @@ class Account:
         """
         return self.calculate_account_entries_sum(
             self.get_account_entries_for_month(month=month, year=year))
-
 
 
 class AccountingTransaction:
@@ -154,7 +143,6 @@ class AccountingTransaction:
         to_entry = Entry(date, entry_type, money)
         to_acc.add_entry(to_entry)
         self.entries.add(to_entry)
-
 
     def get_value(self):
         # Form: ['Transaction_id', 'Date', 'From Account', 'To Account', 'Amount', 'Description', 'Account owner', 'Type']

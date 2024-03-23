@@ -33,22 +33,32 @@ class Ledger:
         :param year:
         :return: Sum of all transactions for a specific month
         """
-        return self.get_account(account_name).get_account_entries_sum_for_month( month, year)
+        return self.get_account(account_name).get_account_entries_sum_for_month(month, year)
 
-    def get_all_account_total_expense_for_current_month(self) -> {}:
+    def get_account_total_transaction_values_for_month_by_type(self, acc_type: str, month: datetime.month, year: datetime.year) -> {}:
         """
-        Get the total expense values of all expense accounts for the current month
-        :return: Dictionary with account name as key and total expense as value
+        Get the total expense values of all accounts of an account type for the month
         """
         result = {}
         for name, account in self.accounts.items():
-            if account.type == "Expense":
-                result[name] = float(account.get_entries_sum_for_current_month())
+            if account.type == acc_type:
+                result[name] = float(account.get_account_entries_sum_for_month(month, year))
         return result
 
-    def get_account_expense_proportions_for_current_month(self):
+    def get_sum_of_account_total_transaction_values_for_month_by_type(self, acc_type: str, month: datetime.month, year: datetime.year):
         """
-        Get the proportion of each expense account from the total expense
+        Get the sum of all accounts of an account type for the month
+        """
+        accounts = self.get_account_total_transaction_values_for_month_by_type(acc_type, month, year)
+        amount_sum = 0
+
+        for account_name, amount in accounts.items():
+            amount_sum += amount
+        return amount_sum
+
+    def get_account_expense_proportions_for_month_by_type(self, acc_type: str, month: datetime.month, year: datetime.year):
+        """
+        Get the proportion of each account of an account type from the sum of all accounts of that type
         for the current month
         :return:
         select
@@ -63,12 +73,15 @@ class Ledger:
         where date >= '2024-03-01' and debit_account != 'Cash'
         group by debit_account
         """
-        expense_accounts = self.get_all_account_total_expense_for_current_month()
-        total_expense = 0
+        accounts = self.get_account_total_transaction_values_for_month_by_type(acc_type, month, year)
+        amount_sum = 0
         result = {}
 
-        for account_name, expense in expense_accounts.items():
-            total_expense += expense
-        for account_name, expense in expense_accounts.items():
-            result[account_name] = (expense, float((expense / total_expense) * 100))
+        for account_name, amount in accounts.items():
+            amount_sum += amount
+        for account_name, amount in accounts.items():
+            result[account_name] = (amount, float((amount / amount_sum) * 100))
         return result
+
+
+

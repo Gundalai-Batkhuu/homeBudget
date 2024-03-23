@@ -2,7 +2,7 @@ import unittest
 from src.model.model import Model
 from src.model.database import create_db_connection, close_db_connection
 import decimal
-
+from datetime import datetime
 
 class TestAccounting(unittest.TestCase):
     conn = create_db_connection()
@@ -26,9 +26,10 @@ class TestAccounting(unittest.TestCase):
         self.assertEqual(float(result), 761.81)
 
     def test_account_expense_proportions_for_current_month(self):
-        result = self.model.get_account_expense_proportions_for_current_month()
+        month = datetime.now().month
+        year = datetime.now().year
+        result = self.model.get_account_expense_proportions_for_month_by_type("Expense", month, year)
         self.assertEqual(result, {'Cash Transfer': 0.0,
-             'Credit Cards': 20.111184674899732,
              'Eating out': 0.0,
              'Electricity & Gas': 0.0,
              'Entertainment': 0.0,
@@ -46,6 +47,13 @@ class TestAccounting(unittest.TestCase):
              'Rego': 0.0,
              'Rent': 0.0,
              'Vices': 0.0})
+
+    def test_total_income_for_the_month(self):
+        self.assertEqual(float(self.model.get_total_amount_of_transactions_by_type_for_given_month("Income", 2, 2024)), 6000.0)
+        self.assertEqual(float(self.model.get_total_amount_of_transactions_by_type_for_given_month("Income", 1, 2024)), 11105.92)
+        self.assertEqual(float(self.model.get_total_amount_of_transactions_by_type_for_given_month("Income", 12, 2023)), 39516.11)
+        self.assertEqual(float(self.model.get_total_amount_of_transactions_by_type_for_given_month("Income", 11, 2023)), 10532.32)
+
 
 if __name__ == '__main__':
     unittest.main()

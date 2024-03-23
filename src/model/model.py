@@ -3,6 +3,7 @@ from src.model.account import AccountingTransaction
 from src.model.journal import Journal
 from src.model.ledger import Ledger
 from src.model.money import Money
+from datetime import datetime
 
 
 class Model:
@@ -45,13 +46,16 @@ class Model:
         Get the total monetary amount of all transactions for the current month
         :return: The total monetary amount of all transactions for the current month
         """
-        return self.journal.get_total_expense_for_current_month()
+        return self.journal.get_total_amount_of_transactions_by_type_for_given_month("Expense", datetime.now().month, datetime.now().year)
 
     def get_account_entries_sum_for_current_month(self, account_name: str):
         return self.ledger.get_account_entries_sum_for_current_month(account_name)
 
-    def get_all_accounts_total_expense_for_current_month(self):
-        return self.ledger.get_all_account_total_expense_for_current_month()
+    def get_all_account_total_transaction_value_for_month_by_type(self, acc_type: str, month: datetime.month, year: datetime.year):
+        """
+        Get the total monetary amount of all transactions of a specific account type for the current month
+        """
+        return self.ledger.get_account_total_transaction_values_for_month_by_type(acc_type, month, year)
 
     def get_account_transaction_values(self, account_name: str):
         return self.ledger.get_account_entries(account_name)
@@ -72,11 +76,11 @@ class Model:
     def get_accounts_info(self):
         self.accounts_info = db.get_accounts_info(self.conn)
 
-    def get_account_expense_proportions_for_current_month(self):
+    def get_account_expense_proportions_for_month_by_type(self, acc_type: str, month: datetime.month, year: datetime.year):
         """
-        Get the proportions of the account balances for the current month
+        Get the proportions of balances of accounts of a specific account type for the month
         """
-        return self.ledger.get_account_expense_proportions_for_current_month()
+        return self.ledger.get_account_expense_proportions_for_month_by_type(acc_type, month, year)
 
     def get_latest_cash_at_bank_balance(self):
         return self.journal.get_latest_cash_at_bank_balance()
@@ -89,3 +93,21 @@ class Model:
         :return: A list of all transactions for a specific month
         """
         return self.journal.get_all_transactions_for_month(month, year)
+
+    def get_sum_of_account_total_transaction_values_for_month_by_type(self, acc_type: str, month: datetime.month, year: datetime.year):
+        """
+        Get the sum of all accounts of an account type for the month
+        """
+        return self.ledger.get_sum_of_account_total_transaction_values_for_month_by_type(acc_type, month, year)
+
+    def get_total_amount_of_transactions_by_type_for_given_month(self, trans_type, month, year):
+        """
+        Get the total monetary amount of all transactions of a specific type for the month
+        :param trans_type:
+        :param month:
+        :param year:
+        :return:
+        """
+        return self.journal.get_total_amount_of_transactions_by_type_for_given_month(trans_type, month, year)
+
+

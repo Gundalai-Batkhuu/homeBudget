@@ -3,7 +3,7 @@ import plotly.express as px
 import streamlit as st
 
 
-def plot_monthly_expense_treemap_chart(expense_account_proportions: dict):
+def plot_monthly_cash_outflow_treemap_chart(expense_account_proportions: dict):
     acc_names = list(expense_account_proportions.keys())
     expense_amounts = [values[0] for values in expense_account_proportions.values()]
     percentages = [values[1] for values in expense_account_proportions.values()]
@@ -33,4 +33,10 @@ def plot_all_transactions_for_month_table(transactions: list):
     df = pd.DataFrame(data=zip(date, account_name, amount, description),
                       columns=['Date', 'Category', 'Amount', 'Description'])
     st.dataframe(df,
-                 hide_index=True,)
+                 hide_index=True, )
+
+
+def plot_cash_flow_summary(data: dict):
+    st.table(data)
+    st.bar_chart(data, use_container_width=True)
+

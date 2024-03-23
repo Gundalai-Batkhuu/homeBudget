@@ -22,14 +22,14 @@ class Journal:
         """
         self.transactions.append(transaction)
 
-    def get_total_expense_for_current_month(self):
+    def get_total_amount_of_transactions_by_type_for_given_month(self, trans_type: str, month: datetime.month, year: datetime.year):
         """
-        Get the total monetary amount of all expense transactions for the current month
+        Get the total monetary amount of all expense transactions of a type for the month
         :return:
         """
         sum = 0
         for transaction in self.transactions:
-            if transaction.get_date().month == datetime.now().month and transaction.get_date().year == datetime.now().year and transaction.get_transaction_type() == "Expense":
+            if transaction.get_date().month == month and transaction.get_date().year == year and transaction.get_transaction_type() == trans_type:
                 sum += transaction.get_amount()
         return sum
 

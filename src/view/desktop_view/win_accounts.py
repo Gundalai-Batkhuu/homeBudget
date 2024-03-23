@@ -25,8 +25,8 @@ class AccountsWindow:
     def __init__(self, model: Model):
         self.model = model
         self.account_names = self.model.get_accounts_info()
-        self.accounts_total_expense_for_current_month = model.get_all_accounts_total_expense_for_current_month()
-        self.pie_chart_data = model.get_account_expense_proportions_for_current_month()
+        self.accounts_total_expense_for_current_month = model.get_all_account_total_transaction_value_for_month_by_type("Expense")
+        self.pie_chart_data = model.get_account_expense_proportions_for_month_by_type("Expense")
 
         canvas_column = sg.Column([
             [sg.Canvas(key="-CANVAS-")]
