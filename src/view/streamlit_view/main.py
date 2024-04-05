@@ -29,7 +29,7 @@ if 'year' not in st.session_state:
 st.write("Month:", st.session_state.month, "Year:", st.session_state.year)
 
 model = get_model()
-latest_cash_at_bank_balance = model.get_latest_cash_at_bank_balance()
+cash_at_bank_balance = model.get_cash_at_bank_balance_by_month(st.session_state.month, st.session_state.year)
 
 col1, col2, col3 = st.columns([0.2, 0.4, 0.4])
 
@@ -42,7 +42,7 @@ def change_date():
 
 with col1:
     st.header('Bank balance')
-    st.write(latest_cash_at_bank_balance)
+    st.write("End of month cash at bank: ", cash_at_bank_balance)
     month_name = st.selectbox(
         'Select a month',
         [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
@@ -64,7 +64,7 @@ with col2:
     total_debt_repayments = model.get_sum_of_account_total_transaction_values_for_month_by_type("Liability", st.session_state.month,
                                                                                                 st.session_state.year)
     total_income = float(model.get_total_amount_of_transactions_by_type_for_given_month("Income", st.session_state.month, st.session_state.year))
-    total_savings = total_income - total_expense - total_debt_repayments
+    total_savings = total_income - total_expense - total_debt_repayments # Wrong
 
     plot_cash_flow_summary({'Total Income': total_income,
                             'Total Expense': total_expense,

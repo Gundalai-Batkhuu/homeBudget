@@ -14,7 +14,8 @@ class Ledger:
             name = account_info[1]
             id = account_info[0]
             type = account_info[2]  # Type is either 'Asset', 'Liability', 'Equity', 'Income', or 'Expense'
-            self.accounts[name] = Account(id, name, type)
+            budget_amount = account_info[3]
+            self.accounts[name] = Account(id, name, type, budget_amount)
 
     def get_account(self, account_name) -> Account:
         return self.accounts[account_name]
@@ -80,7 +81,10 @@ class Ledger:
         for account_name, amount in accounts.items():
             amount_sum += amount
         for account_name, amount in accounts.items():
-            result[account_name] = (amount, float((amount / amount_sum) * 100))
+            if amount_sum != 0:
+                result[account_name] = (amount, float((amount / amount_sum) * 100))
+            else:
+                result[account_name] = (amount, 0)
         return result
 
 

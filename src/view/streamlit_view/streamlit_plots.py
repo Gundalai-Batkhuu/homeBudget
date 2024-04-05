@@ -12,8 +12,11 @@ def plot_monthly_cash_outflow_treemap_chart(expense_account_proportions: dict):
         names=acc_names,
         parents=[''] * len(acc_names),
         values=expense_amounts,
-        title='Expenses by Categories'
+        title='Expenses by Categories',
+        width=600,
+        height=400
     )
+
 
     # Assign custom data to each trace
     fig.update_traces(customdata=list(zip(expense_amounts, percentages)))

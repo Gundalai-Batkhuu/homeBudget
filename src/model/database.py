@@ -5,7 +5,7 @@ import csv
 import pandas as pd
 
 
-def create_db_connection(credentials_file='/home/gunee/Projects/Gunee/homeBudget/conf/local/credentials.json'):
+def create_db_connection(credentials_file='/home/gunee/Projects/Gunee/homeBudget/conf/local/db_credentials.json'):
     # Load database credentials from the JSON file
     with open(credentials_file, 'r') as file:
         credentials = json.load(file)
@@ -100,12 +100,12 @@ def add_transaction_category(conn, file):
 
 def get_accounts_info(conn):
     with conn.cursor() as cur:
-        select_script = "SELECT account_id, name, type FROM Accounts"
+        select_script = "SELECT account_id, name, type, budget_amount FROM Accounts"
         cur.execute(select_script)
         values = cur.fetchall()
 
     # Extract the values from the fetched data and convert them into a list of tuples
-    accounts_info = [(value[0], value[1], value[2]) for value in values]
+    accounts_info = [(value[0], value[1], value[2], value[3]) for value in values]
 
     return accounts_info
 

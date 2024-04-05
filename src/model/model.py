@@ -110,4 +110,13 @@ class Model:
         """
         return self.journal.get_total_amount_of_transactions_by_type_for_given_month(trans_type, month, year)
 
+    def get_cash_at_bank_balance_by_month(self, month: datetime.month, year: datetime.year):
+        """
+        Get the cash at bank balance for a specific month
+        :param month:
+        :param year:
+        :return:
+        """
+        return self.journal.get_cash_at_bank_balance_by_month(month, year)
+
 

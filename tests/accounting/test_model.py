@@ -54,6 +54,10 @@ class TestAccounting(unittest.TestCase):
         self.assertEqual(float(self.model.get_total_amount_of_transactions_by_type_for_given_month("Income", 12, 2023)), 39516.11)
         self.assertEqual(float(self.model.get_total_amount_of_transactions_by_type_for_given_month("Income", 11, 2023)), 10532.32)
 
+    def test_cash_at_bank_balance_for_month(self):
+        self.assertEqual(float(self.model.get_cash_at_bank_balance_by_month(2, 2024)), 7.48)
+        self.assertEqual(float(self.model.get_cash_at_bank_balance_by_month(1, 2024)), 324.83)
+        self.assertEqual(float(self.model.get_cash_at_bank_balance_by_month(12, 2023)), 89.40)
 
 if __name__ == '__main__':
     unittest.main()

@@ -53,6 +53,19 @@ class Journal:
                 transactions.append(transaction)
         return transactions
 
+    def get_cash_at_bank_balance_by_month(self, month, year):
+        """
+        Get the cash at bank balance for a specific month
+        :param month:
+        :param year:
+        :return: The cash at bank balance for a specific month
+        """
+        transactions = self.get_all_transactions_for_month(month, year)
+        if transactions is None or len(transactions) == 0:
+            return 0
+        else:
+            return transactions[0].get_bank_balance()
+
 
 
 
