@@ -16,7 +16,6 @@ def plot_monthly_cash_outflow_treemap_chart(expense_account_proportions: dict):
         height=400
     )
 
-
     # Assign custom data to each trace
     fig.update_traces(customdata=list(zip(expense_amounts, percentages)))
     # Update hover template to include custom data
@@ -39,9 +38,8 @@ def plot_all_transactions_for_month_table(transactions: list):
 
 
 def plot_cash_flow_summary(df: pd.DataFrame):
-    st.table(df)
     # Create a bar chart using Plotly
-    fig = px.bar(df, y='transaction_type', x=['amount', 'actual_values'], barmode='group',
+    fig = px.bar(df, y='transaction_type', x=['expected_value', 'actual_values'], barmode='group',
                  labels={'value': 'Values', 'transaction_type': 'Transaction Type'},
                  width=500,
                  height=400,

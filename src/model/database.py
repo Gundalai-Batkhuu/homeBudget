@@ -165,6 +165,6 @@ def get_expected_total_values_by_type(conn):
     # Convert 'date_column' to datetime
     df['date'] = pd.to_datetime(df['date'])
     df['transaction_type'] = df['transaction_type'].str.strip()
-    df['amount'] = df['amount'].astype(float)
+    df['expected_value'] = df['expected_value'].astype(float)
 
     return df
