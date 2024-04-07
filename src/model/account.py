@@ -14,12 +14,12 @@ class Account:
     type: str
     budget_amount: Money
 
-    def __init__(self, account_number: int, name: str, type: str, budget_amount: float):
+    def __init__(self, account_number: int, name: str, type: str, budget_amount):
         self.account_number = account_number
         self.entries = list()
         self.name = name
         self.type = type
-        #self.budget_amount = Money(Decimal(budget_amount))
+        self.budget_amount = Money(Decimal(budget_amount))
 
     def get_entries(self):
         return self.entries

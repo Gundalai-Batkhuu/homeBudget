@@ -1,6 +1,7 @@
+import pandas as pd
 import streamlit as st
 from src.model.model import Model
-from src.model.database import create_db_connection, close_db_connection
+from src.model.database import connect, close
 from streamlit_plots import plot_monthly_cash_outflow_treemap_chart, plot_all_transactions_for_month_table, \
     plot_cash_flow_summary
 from datetime import datetime
@@ -14,9 +15,9 @@ st.set_page_config(
 
 @st.cache_resource
 def get_model():
-    conn = create_db_connection()
+    conn = connect()
     model = Model(conn)
-    close_db_connection(conn)
+    close(conn)
     return model
 
 
@@ -59,17 +60,23 @@ with col1:
 
 with col2:
     st.header('Cash flow summary')
-
     total_expense = model.get_sum_of_account_total_transaction_values_for_month_by_type("Expense", st.session_state.month, st.session_state.year)
-    total_debt_repayments = model.get_sum_of_account_total_transaction_values_for_month_by_type("Liability", st.session_state.month,
-                                                                                                st.session_state.year)
+    total_debt_repayments = model.get_sum_of_account_total_transaction_values_for_month_by_type("Liability", st.session_state.month,st.session_state.year)
     total_income = float(model.get_total_amount_of_transactions_by_type_for_given_month("Income", st.session_state.month, st.session_state.year))
     total_savings = total_income - total_expense - total_debt_repayments # Wrong
 
-    plot_cash_flow_summary({'Total Income': total_income,
-                            'Total Expense': total_expense,
-                            'Total Debt Repayments': total_debt_repayments,
-                            'Total Savings': total_savings})
+    actual_total_values = pd.DataFrame({
+        'transaction_type': ['Total Income', 'Total Expense', 'Total Debt Repayments', 'Total Savings'],
+        'actual_values': [total_income, total_expense, total_debt_repayments, total_savings]
+    })
+
+    expected_total_values = model.get_expected_total_values_increment_by_transaction_type_for_month(
+        st.session_state.month, st.session_state.year)
+
+    df = pd.merge(expected_total_values, actual_total_values)[['transaction_type', 'amount', 'actual_values']]
+
+    plot_cash_flow_summary(df)
+
 with col3:
     st.header('Expenses')
     expense_account_proportions = model.get_account_expense_proportions_for_month_by_type("Expense", st.session_state.month, st.session_state.year)
