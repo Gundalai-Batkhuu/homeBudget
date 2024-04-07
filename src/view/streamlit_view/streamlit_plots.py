@@ -11,7 +11,7 @@ def plot_monthly_cash_outflow_treemap_chart(expense_account_proportions: dict):
         names=acc_names,
         parents=[''] * len(acc_names),
         values=expense_amounts,
-        title='Expenses by Categories',
+        title='Actual allocation summary',
         width=600,
         height=400
     )

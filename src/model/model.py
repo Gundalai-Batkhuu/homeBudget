@@ -127,4 +127,3 @@ class Model:
         date = datetime(year, month, 1)
         return self.expected_total_values_by_type[self.expected_total_values_by_type['date'] == date]
 
-

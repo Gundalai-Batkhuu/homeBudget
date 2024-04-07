@@ -12,7 +12,6 @@ st.set_page_config(
     page_icon="💰"
 )
 
-
 @st.cache_resource
 def get_model():
     conn = connect()
@@ -20,6 +19,7 @@ def get_model():
     close(conn)
     return model
 
+st.session_state.model = get_model()
 
 if 'month' not in st.session_state:
     st.session_state.month = datetime.now().month
@@ -27,13 +27,24 @@ if 'month' not in st.session_state:
 if 'year' not in st.session_state:
     st.session_state.year = datetime.now().year
 
+with st.sidebar:
+    st.title("Personal Finance Dashboard")
+    month_name = st.selectbox(
+        'Select a month',
+        [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+        key='month',
+        placeholder='Select a month',
+    )
+    year = st.selectbox('Select a year',
+                        [2022, 2023, 2024],
+                        key='year',
+                        placeholder='Select a year'
+                        )
+
 st.write("Month:", st.session_state.month, "Year:", st.session_state.year)
 
 model = get_model()
 cash_at_bank_balance = model.get_cash_at_bank_balance_by_month(st.session_state.month, st.session_state.year)
-
-col1, col2, col3 = st.columns([0.2, 0.4, 0.4])
-
 
 def change_date():
     st.session_state.month = datetime.strptime(month_name, "%B").month
@@ -41,24 +52,12 @@ def change_date():
     st.experimental_rerun()
 
 
+st.header('Bank balance')
+st.write("End of month cash at bank: ", cash_at_bank_balance)
+
+col1, col2 = st.columns([0.5, 0.4])
+
 with col1:
-    st.header('Bank balance')
-    st.write("End of month cash at bank: ", cash_at_bank_balance)
-    month_name = st.selectbox(
-        'Select a month',
-        [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-        key='month',
-        placeholder='Select a month',
-        )
-    year = st.selectbox('Select a year',
-                        [2022, 2023, 2024],
-                        key='year',
-                        placeholder='Select a year'
-                        )
-
-
-
-with col2:
     st.header('Cash flow summary')
     total_expense = model.get_sum_of_account_total_transaction_values_for_month_by_type("Expense", st.session_state.month, st.session_state.year)
     total_debt_repayments = model.get_sum_of_account_total_transaction_values_for_month_by_type("Liability", st.session_state.month,st.session_state.year)
@@ -77,11 +76,9 @@ with col2:
 
     plot_cash_flow_summary(df)
 
-with col3:
+with col2:
     st.header('Expenses')
     expense_account_proportions = model.get_account_expense_proportions_for_month_by_type("Expense", st.session_state.month, st.session_state.year)
     debt_account_proportions = model.get_account_expense_proportions_for_month_by_type("Liability", st.session_state.month, st.session_state.year)
     plot_monthly_cash_outflow_treemap_chart({**expense_account_proportions, **debt_account_proportions})
 
-st.header('Transactions list')
-plot_all_transactions_for_month_table(model.get_all_transactions_for_month(st.session_state.month, st.session_state.year))
