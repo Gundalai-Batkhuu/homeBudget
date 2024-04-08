@@ -4,7 +4,7 @@ import src.view.desktop_view.win_journal as jrn
 import src.view.desktop_view.win_homepage as hp
 import PySimpleGUI as sg
 from src.model.model import Model
-from src.model.database import create_db_connection, close_db_connection
+from src.model.database import connect, close
 
 
 class WindowController:
@@ -90,9 +90,9 @@ class WindowController:
 
 
 def run_desktop_app():
-    conn = create_db_connection()
+    conn = connect()
 
     model = Model(conn)
     controller = WindowController(model)
     controller.run()
-    close_db_connection(conn)
+    close(conn)

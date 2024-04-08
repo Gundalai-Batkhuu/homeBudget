@@ -1,13 +1,13 @@
 import unittest
 from src.model.model import Model
-from src.model.database import create_db_connection, close_db_connection
+from src.model.database import connect, close
 import decimal
 from datetime import datetime
 
 class TestAccounting(unittest.TestCase):
-    conn = create_db_connection()
+    conn = connect()
     model = Model(conn)
-    close_db_connection(conn)
+    close(conn)
 
     def test_number_of_transactions(self):
         transactions = self.model.get_transactions()

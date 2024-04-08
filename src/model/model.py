@@ -11,14 +11,15 @@ class Model:
     accounts_info: list
     conn = None
     ledger = None
+    expected_total_values_by_type = None
 
     def __init__(self, conn):
         self.conn = conn
         df = db.fetch_data_from_db(conn)
-
         self.get_accounts_info()
-
         self.ledger = Ledger(self.accounts_info)
+        self.expected_total_values_by_type = db.get_expected_total_values_by_type(self.conn)
+
         for index, row in df.iterrows():
             transaction = AccountingTransaction(
                 row["transaction_id"],
@@ -119,4 +120,10 @@ class Model:
         """
         return self.journal.get_cash_at_bank_balance_by_month(month, year)
 
+    def get_expected_total_values_increment_by_transaction_type_for_month(self, month, year):
+        """
+        Get the expected total values for a specific month
+        """
+        date = datetime(year, month, 1)
+        return self.expected_total_values_by_type[self.expected_total_values_by_type['date'] == date]
 
