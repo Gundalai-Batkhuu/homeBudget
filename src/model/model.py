@@ -35,6 +35,9 @@ class Model:
             )
             self.journal.add_transaction(transaction)
 
+    def get_journal(self):
+        return self.journal
+
     def get_transactions(self):
         """
         Get all transactions in the journal
@@ -47,7 +50,7 @@ class Model:
         Get the total monetary amount of all transactions for the current month
         :return: The total monetary amount of all transactions for the current month
         """
-        return self.journal.get_total_amount_of_transactions_by_type_for_given_month("Expense", datetime.now().month, datetime.now().year)
+        return self.journal.get_sum_of_transactions_by_type_for_given_month("Expense", datetime.now().month, datetime.now().year)
 
     def get_account_entries_sum_for_current_month(self, account_name: str):
         return self.ledger.get_account_entries_sum_for_current_month(account_name)
@@ -77,14 +80,12 @@ class Model:
     def get_accounts_info(self):
         self.accounts_info = db.get_accounts_info(self.conn)
 
-    def get_account_expense_proportions_for_month_by_type(self, acc_type: str, month: datetime.month, year: datetime.year):
+    def get_account_transaction_proportions_for_month_by_type(self, acc_type: str, month: datetime.month, year: datetime.year):
         """
         Get the proportions of balances of accounts of a specific account type for the month
         """
         return self.ledger.get_account_expense_proportions_for_month_by_type(acc_type, month, year)
 
-    def get_latest_cash_at_bank_balance(self):
-        return self.journal.get_latest_cash_at_bank_balance()
 
     def get_all_transactions_for_month(self, month, year):
         """
@@ -109,7 +110,7 @@ class Model:
         :param year:
         :return:
         """
-        return self.journal.get_total_amount_of_transactions_by_type_for_given_month(trans_type, month, year)
+        return self.journal.get_sum_of_transactions_by_type_for_given_month(trans_type, month, year)
 
     def get_cash_at_bank_balance_by_month(self, month: datetime.month, year: datetime.year):
         """
@@ -126,4 +127,18 @@ class Model:
         """
         date = datetime(year, month, 1)
         return self.expected_total_values_by_type[self.expected_total_values_by_type['date'] == date]
+
+    def get_account_total_transaction_values_for_month_by_type(self, acc_type, month, year):
+        """
+        Get the total monetary amount of all transactions of an account type for a specific month
+        """
+        return self.ledger.get_account_total_transaction_values_for_month_by_type(acc_type, month, year)
+
+    def get_income_transactions_sum_for_each_account_for_month(self, month, year):
+        """
+        Get the sum of all transactions of a specific type for the month for each account
+        """
+        return self.journal.get_sum_of_transactions_for_each_account_by_type_for_month('Income', month, year)
+
+
 

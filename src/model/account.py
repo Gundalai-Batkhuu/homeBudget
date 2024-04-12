@@ -147,14 +147,6 @@ class AccountingTransaction:
         to_acc.add_entry(to_entry)
         self.entries.add(to_entry)
 
-    def get_value(self):
-        # Form: ['Transaction_id', 'Date', 'From Account', 'To Account', 'Amount', 'Description', 'Account owner', 'Type']
-        result = [self.id, self.date, self.from_acc.get_name(), self.to_acc.get_name(), self.money.amount,
-                  self.description,
-                  self.account_owner, self.transaction_type, self.bank_balance]
-
-        return result
-
     def get_from_account(self):
         return self.from_acc.get_name()
 
@@ -170,25 +162,5 @@ class AccountingTransaction:
     def get_bank_balance(self):
         return self.bank_balance
 
-    def get_transaction_type(self):
+    def get_type(self):
         return self.transaction_type
-
-
-class AssetAccount(Account):
-    pass
-    # Additional attributes and methods specific to asset accounts
-
-
-class LiabilityAccount(Account):
-    pass
-    # Additional attributes and methods specific to liability accounts
-
-
-class RevenueAccount(Account):
-    pass
-    # Additional attributes and methods specific to revenue accounts
-
-
-class ExpenseAccount(Account):
-    pass
-    # Additional attributes and methods specific to expense accounts

@@ -3,7 +3,7 @@ import streamlit as st
 from src.model.model import Model
 from src.model.database import connect, close
 from streamlit_plots import plot_monthly_cash_outflow_treemap_chart, plot_all_transactions_for_month_table, \
-    plot_cash_flow_summary
+    plot_cash_flow_summary_bar_chart, plot_actual_cash_allocation_pie_chart
 from datetime import datetime
 
 st.session_state.update(st.session_state)
@@ -23,8 +23,13 @@ def get_model():
     return model
 
 
+if 'month_name' not in st.session_state:
+    st.session_state.month_name = datetime.now().strftime('%B')
+
 if 'month' not in st.session_state:
     st.session_state.month = datetime.now().month
+else:
+    st.session_state.month = datetime.strptime(st.session_state.month_name, '%B').month
 
 if 'year' not in st.session_state:
     st.session_state.year = datetime.now().year
@@ -37,8 +42,8 @@ with st.sidebar:
 
     month_name = st.selectbox(
         'Select a month',
-        [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-        key='month',
+        ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+        key='month_name',
         placeholder='Select a month',
     )
     year = st.selectbox('Select a year',
@@ -67,13 +72,19 @@ actual_total_values = pd.DataFrame({
 expected_total_values = st.session_state.model.get_expected_total_values_increment_by_transaction_type_for_month(
     st.session_state.month, st.session_state.year)
 
-df = pd.merge(expected_total_values, actual_total_values)[['transaction_type', 'expected_value', 'actual_values']]
+total_values_by_transaction_type = pd.merge(expected_total_values, actual_total_values)[['transaction_type', 'expected_value', 'actual_values']]
+
+income_account_proportions = st.session_state.model.get_income_transactions_sum_for_each_account_for_month("Income", st.session_state.month, st.session_state.year)
 
 with col1:
     st.header('Cash flow summary')
     st.write("End of month cash at bank: ",
-             "$" + str(st.session_state.model.get_cash_at_bank_balance_by_month(st.session_state.month, st.session_state.year)))
-    st.table(df)
+             "$" + str(st.session_state.model.get_cash_at_bank_balance_by_month(st.session_state.month,
+                                                                                st.session_state.year)))
+    st.table(total_values_by_transaction_type)
+    st.table(income_account_proportions)
 
 with col2:
-    plot_cash_flow_summary(df)
+    plot_cash_flow_summary_bar_chart(total_values_by_transaction_type)
+    plot_actual_cash_allocation_pie_chart(total_values_by_transaction_type[['transaction_type', 'actual_values']])
+

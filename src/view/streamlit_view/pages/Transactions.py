@@ -15,8 +15,8 @@ with st.sidebar:
 
     month_name = st.selectbox(
         'Select a month',
-        [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-        key='month',
+        ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+        key='month_name',
         placeholder='Select a month',
     )
     year = st.selectbox('Select a year',

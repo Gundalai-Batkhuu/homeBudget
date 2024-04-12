@@ -16,8 +16,8 @@ with st.sidebar:
 
     month_name = st.selectbox(
         'Select a month',
-        [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-        key='month',
+        ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+        key='month_name',
         placeholder='Select a month',
     )
     year = st.selectbox('Select a year',
@@ -27,6 +27,6 @@ with st.sidebar:
                         )
 
 st.header('Expenses')
-expense_account_proportions = st.session_state.model.get_account_expense_proportions_for_month_by_type("Expense", st.session_state.month, st.session_state.year)
-debt_account_proportions = st.session_state.model.get_account_expense_proportions_for_month_by_type("Liability", st.session_state.month, st.session_state.year)
+expense_account_proportions = st.session_state.model.get_account_transaction_proportions_for_month_by_type("Expense", st.session_state.month, st.session_state.year)
+debt_account_proportions = st.session_state.model.get_account_transaction_proportions_for_month_by_type("Liability", st.session_state.month, st.session_state.year)
 plot_monthly_cash_outflow_treemap_chart({**expense_account_proportions, **debt_account_proportions})

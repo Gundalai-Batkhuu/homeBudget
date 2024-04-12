@@ -2,6 +2,7 @@ import pandas as pd
 import plotly.express as px
 import streamlit as st
 
+
 def plot_monthly_cash_outflow_treemap_chart(expense_account_proportions: dict):
     acc_names = list(expense_account_proportions.keys())
     expense_amounts = [values[0] for values in expense_account_proportions.values()]
@@ -37,7 +38,7 @@ def plot_all_transactions_for_month_table(transactions: list):
                  hide_index=True, )
 
 
-def plot_cash_flow_summary(df: pd.DataFrame):
+def plot_cash_flow_summary_bar_chart(df: pd.DataFrame):
     # Create a bar chart using Plotly
     fig = px.bar(df, y='transaction_type', x=['expected_value', 'actual_values'], barmode='group',
                  labels={'value': 'Values', 'transaction_type': 'Transaction Type'},
@@ -51,3 +52,8 @@ def plot_cash_flow_summary(df: pd.DataFrame):
     )
     st.plotly_chart(fig)
 
+
+def plot_actual_cash_allocation_pie_chart(expected_total_values_by_type: pd.DataFrame):
+    # Create a pie chart using Plotly
+    fig = px.pie(expected_total_values_by_type, values='actual_values', names='transaction_type', title='Actual cash allocation',)
+    st.plotly_chart(fig)

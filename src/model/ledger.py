@@ -40,6 +40,7 @@ class Ledger:
         """
         Get the total expense values of all accounts of an account type for the month
         """
+
         result = {}
         for name, account in self.accounts.items():
             if account.type == acc_type:
