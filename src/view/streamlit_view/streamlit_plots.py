@@ -57,3 +57,13 @@ def plot_actual_cash_allocation_pie_chart(expected_total_values_by_type: pd.Data
     # Create a pie chart using Plotly
     fig = px.pie(expected_total_values_by_type, values='actual_values', names='transaction_type', title='Actual cash allocation',)
     st.plotly_chart(fig)
+
+def plot_income_proportions_pie_chart(income_account_proportions):
+    # Create a pie chart using Plotly
+    df = pd.DataFrame.from_dict(income_account_proportions, orient='index', columns=['Value'])
+    # Reset index to make the 'Misc' column a regular column
+    df.reset_index(inplace=True)
+    df.columns = ['Account', 'Value']
+    fig = px.pie(df, values='Value', names='Account',
+                 title='Income proportions')
+    st.plotly_chart(fig)

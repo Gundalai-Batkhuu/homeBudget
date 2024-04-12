@@ -3,7 +3,7 @@ import streamlit as st
 from src.model.model import Model
 from src.model.database import connect, close
 from streamlit_plots import plot_monthly_cash_outflow_treemap_chart, plot_all_transactions_for_month_table, \
-    plot_cash_flow_summary_bar_chart, plot_actual_cash_allocation_pie_chart
+    plot_cash_flow_summary_bar_chart, plot_actual_cash_allocation_pie_chart, plot_income_proportions_pie_chart
 from datetime import datetime
 
 st.session_state.update(st.session_state)
@@ -74,7 +74,11 @@ expected_total_values = st.session_state.model.get_expected_total_values_increme
 
 total_values_by_transaction_type = pd.merge(expected_total_values, actual_total_values)[['transaction_type', 'expected_value', 'actual_values']]
 
-income_account_proportions = st.session_state.model.get_income_transactions_sum_for_each_account_for_month("Income", st.session_state.month, st.session_state.year)
+income_account_proportions = st.session_state.model.get_sum_of_transactions_for_each_account_by_type_for_month(st.session_state.month, st.session_state.year)
+
+
+
+
 
 with col1:
     st.header('Cash flow summary')
@@ -83,6 +87,7 @@ with col1:
                                                                                 st.session_state.year)))
     st.table(total_values_by_transaction_type)
     st.table(income_account_proportions)
+    plot_income_proportions_pie_chart(income_account_proportions)
 
 with col2:
     plot_cash_flow_summary_bar_chart(total_values_by_transaction_type)

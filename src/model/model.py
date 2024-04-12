@@ -134,7 +134,7 @@ class Model:
         """
         return self.ledger.get_account_total_transaction_values_for_month_by_type(acc_type, month, year)
 
-    def get_income_transactions_sum_for_each_account_for_month(self, month, year):
+    def get_sum_of_transactions_for_each_account_by_type_for_month(self, month, year):
         """
         Get the sum of all transactions of a specific type for the month for each account
         """

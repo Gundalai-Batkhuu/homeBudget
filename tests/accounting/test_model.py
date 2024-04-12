@@ -82,8 +82,21 @@ class TestModel(unittest.TestCase):
                                   'Vices': 0.0})
 
     def test_account_total_transaction_values_for_month_by_type(self):
-        result = self.model.get_income_transactions_sum_for_each_account_for_month(3, 2024)
+        result = self.model.get_sum_of_transactions_for_each_account_by_type_for_month(3, 2024)
         self.assertEqual({'Cash Transfer': 6000.0}, result)
+
+    def test_get_sum_of_transactions_for_each_account_by_type_for_month(self):
+        income_account_proportions = self.model.get_sum_of_transactions_for_each_account_by_type_for_month(3, 2024)
+        print(income_account_proportions)
+        import pandas as pd
+        df = pd.DataFrame.from_dict(income_account_proportions, orient='index', columns=['Value'])
+        # Reset index to make the 'Misc' column a regular column
+        df.reset_index(inplace=True)
+        df.columns = ['Account', 'Value']
+        print(df)
+        self.assertEqual({'Account': {0: 'Misc'}, 'Value': {0: 6000.0}}, df.to_dict())
+
+
 
 if __name__ == '__main__':
     unittest.main()
