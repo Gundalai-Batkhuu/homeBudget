@@ -52,7 +52,7 @@ with st.sidebar:
                         placeholder='Select a year'
                         )
 
-col1, col2 = st.columns([0.5, 0.5])
+
 
 total_expense = st.session_state.model.get_sum_of_account_total_transaction_values_for_month_by_type("Expense",
                                                                                                      st.session_state.month,
@@ -76,20 +76,24 @@ total_values_by_transaction_type = pd.merge(expected_total_values, actual_total_
 
 income_account_proportions = st.session_state.model.get_sum_of_transactions_for_each_account_by_type_for_month(st.session_state.month, st.session_state.year)
 
+col11, col12 = st.columns([0.5, 0.5])
 
-
-
-
-with col1:
+with col11:
     st.header('Cash flow summary')
     st.write("End of month cash at bank: ",
              "$" + str(st.session_state.model.get_cash_at_bank_balance_by_month(st.session_state.month,
                                                                                 st.session_state.year)))
     st.table(total_values_by_transaction_type)
-    st.table(income_account_proportions)
+
+
+with col12:
+    plot_cash_flow_summary_bar_chart(total_values_by_transaction_type)
+
+
+col21, col22 = st.columns([0.5, 0.5])
+
+with col21:
     plot_income_proportions_pie_chart(income_account_proportions)
 
-with col2:
-    plot_cash_flow_summary_bar_chart(total_values_by_transaction_type)
+with col22:
     plot_actual_cash_allocation_pie_chart(total_values_by_transaction_type[['transaction_type', 'actual_values']])
-

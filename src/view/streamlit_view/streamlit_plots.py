@@ -43,7 +43,7 @@ def plot_cash_flow_summary_bar_chart(df: pd.DataFrame):
     fig = px.bar(df, y='transaction_type', x=['expected_value', 'actual_values'], barmode='group',
                  labels={'value': 'Values', 'transaction_type': 'Transaction Type'},
                  width=500,
-                 height=400,
+                 height=300,
                  orientation='h')
     fig.update_layout(
         xaxis_title=None,
@@ -55,8 +55,17 @@ def plot_cash_flow_summary_bar_chart(df: pd.DataFrame):
 
 def plot_actual_cash_allocation_pie_chart(expected_total_values_by_type: pd.DataFrame):
     # Create a pie chart using Plotly
-    fig = px.pie(expected_total_values_by_type, values='actual_values', names='transaction_type', title='Actual cash allocation',)
+    fig = px.pie(
+        expected_total_values_by_type,
+        values='actual_values',
+        names='transaction_type',
+        title='Actual cash allocation',
+        width=500,
+        height=400
+    )
+    fig.update_layout(title_x=0.5)
     st.plotly_chart(fig)
+
 
 def plot_income_proportions_pie_chart(income_account_proportions):
     # Create a pie chart using Plotly
@@ -64,6 +73,12 @@ def plot_income_proportions_pie_chart(income_account_proportions):
     # Reset index to make the 'Misc' column a regular column
     df.reset_index(inplace=True)
     df.columns = ['Account', 'Value']
-    fig = px.pie(df, values='Value', names='Account',
-                 title='Income proportions')
+    fig = px.pie(df,
+                 values='Value',
+                 names='Account',
+                 title='Income proportions',
+                 width=500,
+                 height=400,
+                 )
+    fig.update_layout(title_x=0.5)
     st.plotly_chart(fig)

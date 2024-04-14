@@ -23,9 +23,6 @@ class Ledger:
     def get_account_entries(self, account_name):
         return self.get_account(account_name).get_entries()
 
-    def get_account_entries_sum_for_current_month(self, account_name):
-        return self.get_account(account_name).get_entries_sum_for_current_month()
-
     def get_account_entries_sum_for_month(self, account_name: str, month: int, year: int):
         """
         Get the total monetary amount of all transactions for a specific month

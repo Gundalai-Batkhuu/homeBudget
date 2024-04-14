@@ -19,6 +19,4 @@ class TestAccounting(unittest.TestCase):
 
         self.assertEqual(5, len(result))
 
-    def test_entries_sum_for_current_month(self):
-        result = self.model.get_account_entries_sum_for_current_month("Credit Cards")
-        self.assertEqual(367.55, float(result))
+

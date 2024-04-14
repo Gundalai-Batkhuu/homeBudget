@@ -52,9 +52,6 @@ class Model:
         """
         return self.journal.get_sum_of_transactions_by_type_for_given_month("Expense", datetime.now().month, datetime.now().year)
 
-    def get_account_entries_sum_for_current_month(self, account_name: str):
-        return self.ledger.get_account_entries_sum_for_current_month(account_name)
-
     def get_all_account_total_transaction_value_for_month_by_type(self, acc_type: str, month: datetime.month, year: datetime.year):
         """
         Get the total monetary amount of all transactions of a specific account type for the current month
