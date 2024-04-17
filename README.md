@@ -24,3 +24,4 @@ Sprint 2
 
 ## DevOps
 - Trunk-based development
+- Unit testing with pytest

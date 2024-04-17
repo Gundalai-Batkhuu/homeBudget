@@ -1,9 +1,8 @@
 import pandas as pd
 import streamlit as st
 from src.model.model import Model
-from src.model.database import connect, close
-from streamlit_plots import plot_monthly_cash_outflow_treemap_chart, plot_all_transactions_for_month_table, \
-    plot_cash_flow_summary_bar_chart, plot_actual_cash_allocation_pie_chart, plot_income_proportions_pie_chart
+from app.src.model.database import connect, close
+from streamlit_plots import plot_cash_flow_summary_bar_chart, plot_actual_cash_allocation_pie_chart, plot_income_proportions_pie_chart
 from datetime import datetime
 
 st.session_state.update(st.session_state)

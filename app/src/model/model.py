@@ -1,4 +1,4 @@
-from src.model import database as db
+from app.src.model import database as db
 from src.model.account import AccountingTransaction
 from src.model.journal import Journal
 from src.model.ledger import Ledger
@@ -136,6 +136,9 @@ class Model:
         Get the sum of all transactions of a specific type for the month for each account
         """
         return self.journal.get_sum_of_transactions_for_each_account_by_type_for_month('Income', month, year)
+
+    def get_ledger(self):
+        return self.ledger
 
 
 

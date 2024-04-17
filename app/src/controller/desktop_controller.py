@@ -1,10 +1,10 @@
 import src.view.desktop_view.win_accounts as accs
 import src.view.desktop_view.win_account as acc
-import src.view.desktop_view.win_journal as jrn
+import app.src.view.desktop_view.win_journal as jrn
 import src.view.desktop_view.win_homepage as hp
 import PySimpleGUI as sg
 from src.model.model import Model
-from src.model.database import connect, close
+from app.src.model.database import connect, close
 
 
 class WindowController:
