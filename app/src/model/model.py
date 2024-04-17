@@ -1,8 +1,8 @@
-from app.src.model import database as db
-from src.model.account import AccountingTransaction
-from src.model.journal import Journal
-from src.model.ledger import Ledger
-from src.model.money import Money
+from . import database as db
+from .account import AccountingTransaction
+from .journal import Journal
+from .ledger import Ledger
+from .money import Money
 from datetime import datetime
 
 

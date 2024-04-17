@@ -1,4 +1,4 @@
-from src.model.model import Model
+from ...src.model.model import Model
 from app.src.model.database import connect, close
 import pytest
 

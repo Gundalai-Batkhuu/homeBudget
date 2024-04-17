@@ -6,7 +6,8 @@ import pandas as pd
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
-def connect(credentials_file='/home/gunee/Projects/Gunee/homeBudget/conf/local/db_credentials.json'):
+
+def connect(credentials_file='../app/conf/local/db_credentials.json'):
     # Load database credentials from the JSON file
     with open(credentials_file, 'r') as file:
         credentials = json.load(file)

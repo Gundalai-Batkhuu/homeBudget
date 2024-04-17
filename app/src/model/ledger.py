@@ -1,5 +1,5 @@
 from datetime import datetime
-from src.model.account import Account
+from .account import Account
 
 
 class Ledger:
