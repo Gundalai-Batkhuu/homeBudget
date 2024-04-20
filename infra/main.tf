@@ -2,118 +2,78 @@ provider "aws" {
   region = local.region
 }
 
-data "aws_caller_identity" "current" {}
-data "aws_availability_zones" "available" {}
-
 locals {
   name    = "home-budget"
   region  = "ap-southeast-2"
-  region2 = "ap-southeast-1"
-
-  vpc_cidr = "10.0.0.0/16"
-  azs      = slice(data.aws_availability_zones.available.names, 0, 3)
-
-  tags = {
-    Name       = local.name
-    Example    = local.name
-    Repository = "https://github.com/terraform-aws-modules/terraform-aws-rds"
-  }
 }
 
 ################################################################################
 # RDS Module
 ################################################################################
 
-module "db" {
-  source = "./.terraform/modules/rds/modules/db_instance"
-
-  identifier = local.name
-
+resource "aws_db_instance" "home-budget" {
+  identifier_prefix = local.name
   # All available versions: https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_PostgreSQL.html#PostgreSQL.Concepts
   engine               = "postgres"
-  engine_version       = "16"
-  instance_class       = "db.m5d.large"
-
-  allocated_storage     = 20
-  max_allocated_storage = 100
+  instance_class       = "db.t3.micro"
+  allocated_storage    = 5
 
   # NOTE: Do NOT use 'user' as the value for 'username' as it throws:
   # "Error creating DB Instance: InvalidParameterValue: MasterUsername
   # user cannot be used as it is a reserved word used by the engine"
   db_name  = "homeBudget"
-  username = "dale_dev"
+  username = "gundalai"
   port     = 5432
+  publicly_accessible = true
+  vpc_security_group_ids = [aws_security_group.postgres_homeBudget.id]
 
-  # setting manage_master_user_password_rotation to false after it
-  # has been set to true previously disables automatic rotation
-  manage_master_user_password_rotation              = true
-  master_user_password_rotate_immediately           = false
-  master_user_password_rotation_schedule_expression = "rate(15 days)"
-
-  multi_az               = true
-  db_subnet_group_name   = module.vpc.database_subnet_group
-  vpc_security_group_ids = [module.security_group.security_group_id]
-
-  maintenance_window              = "Mon:00:00-Mon:03:00"
-  backup_window                   = "03:00-06:00"
-  enabled_cloudwatch_logs_exports = ["postgresql", "upgrade"]
-  create_cloudwatch_log_group     = true
-
-  backup_retention_period = 1
-  skip_final_snapshot     = true
-  deletion_protection     = false
-
-  performance_insights_enabled          = true
-  performance_insights_retention_period = 7
-  create_monitoring_role                = true
-  monitoring_interval                   = 60
-  monitoring_role_name                  = "dale-dev-monitoring"
-  monitoring_role_use_name_prefix       = true
-  monitoring_role_description           = "Description for monitoring role"
-
-  tags = local.tags
+  manage_master_user_password   = true
+  master_user_secret_kms_key_id = aws_kms_key.example.key_id
 }
-
 
 ################################################################################
 # Supporting Resources
 ################################################################################
 
-module "vpc" {
-  source  = "terraform-aws-modules/vpc/aws"
-  version = "~> 5.0"
-
-  name = local.name
-  cidr = local.vpc_cidr
-
-  azs              = local.azs
-  public_subnets   = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 8, k)]
-  private_subnets  = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 8, k + 3)]
-  database_subnets = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 8, k + 6)]
-
-  create_database_subnet_group = true
-
-  tags = local.tags
+resource "aws_kms_key" "example" {
+  description = "Example KMS Key"
 }
 
-module "security_group" {
-  source  = "terraform-aws-modules/security-group/aws"
-  version = "~> 5.0"
+# Fetch the default VPC
+resource "aws_default_vpc" "default" {
+}
 
-  name        = local.name
-  description = "homeBudget PostgreSQL security group"
-  vpc_id      = module.vpc.vpc_id
+resource "aws_security_group" "postgres_homeBudget" {
+  name        = "allow-all-inbound"
+  description = "Security group allowing all inbound traffic"
 
-  # ingress
-  ingress_with_cidr_blocks = [
-    {
-      from_port   = 5432
-      to_port     = 5432
-      protocol    = "tcp"
-      description = "PostgreSQL access from within VPC"
-      cidr_blocks = module.vpc.vpc_cidr_block
-    },
-  ]
+  vpc_id = aws_default_vpc.default.id
 
-  tags = local.tags
+  ingress {
+    from_port   = 0
+    to_port     = 65535
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]  // Allow traffic from any IPv4 address
+  }
+
+  ingress {
+    from_port   = 0
+    to_port     = 65535
+    protocol    = "udp"
+    cidr_blocks = ["0.0.0.0/0"]  // Allow traffic from any IPv4 address
+  }
+
+  ingress {
+    from_port   = -1
+    to_port     = -1
+    protocol    = "icmp"
+    cidr_blocks = ["0.0.0.0/0"]  // Allow ICMP traffic from any IPv4 address
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]  // Allow all outbound traffic to any IPv4 address
+  }
 }
