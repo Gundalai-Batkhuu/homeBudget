@@ -12,13 +12,15 @@ class Model:
     conn = None
     ledger = None
     expected_total_values_by_type = None
+    conn_type: str
 
-    def __init__(self, conn):
+    def __init__(self, conn, conn_type):
         self.conn = conn
-        df = db.fetch_data_from_db(conn)
+        self.conn_type = conn_type
+        df = db.fetch_data_from_db(self.conn, self.conn_type)
         self.get_accounts_info()
         self.ledger = Ledger(self.accounts_info)
-        self.expected_total_values_by_type = db.get_expected_total_values_by_type(self.conn)
+        self.expected_total_values_by_type = db.get_expected_total_values_by_type(self.conn, self.conn_type)
 
         for index, row in df.iterrows():
             transaction = AccountingTransaction(
@@ -75,7 +77,7 @@ class Model:
         return self.ledger.get_account_entries_sum_for_month(account_name, month, year)
 
     def get_accounts_info(self):
-        self.accounts_info = db.get_accounts_info(self.conn)
+        self.accounts_info = db.get_accounts_info(self.conn, self.conn_type)
 
     def get_account_transaction_proportions_for_month_by_type(self, acc_type: str, month: datetime.month, year: datetime.year):
         """

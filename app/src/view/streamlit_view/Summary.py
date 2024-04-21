@@ -1,7 +1,8 @@
 import pandas as pd
 import streamlit as st
-from src.model.model import Model
+
 from app.src.model.database import connect, close
+from app.src.model.model import Model
 from streamlit_plots import plot_cash_flow_summary_bar_chart, plot_actual_cash_allocation_pie_chart, plot_income_proportions_pie_chart
 from datetime import datetime
 
@@ -15,10 +16,11 @@ st.set_page_config(
 
 
 @st.cache_resource
-def get_model():
-    conn = connect()
-    model = Model(conn)
-    close(conn)
+def get_model(conn_type):
+    conn = st.connection("postgresql", type="sql")
+    model = Model(conn, conn_type)
+    if conn_type == "postgres":
+        close(conn)
     return model
 
 
@@ -34,7 +36,7 @@ if 'year' not in st.session_state:
     st.session_state.year = datetime.now().year
 
 if 'model' not in st.session_state:
-    st.session_state.model = get_model()
+    st.session_state.model = get_model("streamlit")
 
 with st.sidebar:
     st.write("Month:", str(st.session_state.month), "Year:", str(st.session_state.year))
@@ -50,8 +52,6 @@ with st.sidebar:
                         key='year',
                         placeholder='Select a year'
                         )
-
-
 
 total_expense = st.session_state.model.get_sum_of_account_total_transaction_values_for_month_by_type("Expense",
                                                                                                      st.session_state.month,

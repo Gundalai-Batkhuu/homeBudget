@@ -7,7 +7,7 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
 
-def connect(credentials_file='../app/conf/local/db_credentials.json'):
+def connect(credentials_file='/home/gunee/Projects/Gunee/homeBudget/app/conf/local/db_credentials.json'):
     # Load database credentials from the JSON file
     with open(credentials_file, 'r') as file:
         credentials = json.load(file)
@@ -29,16 +29,19 @@ def close(conn):
         conn.close()
 
 
-def fetch_data_from_db(conn):
-    with conn.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
-        cur.execute("SELECT * FROM transactions")
-        rows = cur.fetchall()
+def fetch_data_from_db(conn, conn_type):
+    if conn_type == "psycopg2":
+        with conn.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
+            cur.execute("SELECT * FROM transactions")
+            rows = cur.fetchall()
 
-    # Convert the fetched data to a pandas DataFrame
-    df = pd.DataFrame(rows, columns=[desc[0] for desc in cur.description])
-
+        # Convert the fetched data to a pandas DataFrame
+        df = pd.DataFrame(rows, columns=[desc[0] for desc in cur.description])
+    elif conn_type == "streamlit":
+        df = conn.query("SELECT * FROM transactions")
+    else:
+        return "Error: Invalid connection type."
     return df
-
 
 def add_transaction_records(conn, file):
     with conn.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
@@ -100,14 +103,18 @@ def add_transaction_category(conn, file):
         conn.commit()
 
 
-def get_accounts_info(conn):
-    with conn.cursor() as cur:
-        select_script = "SELECT account_id, name, type, budget_amount FROM accounts"
-        cur.execute(select_script)
-        values = cur.fetchall()
+def get_accounts_info(conn, conn_type):
+    if conn_type == "psycopg2":
+        with conn.cursor() as cur:
+            select_script = "SELECT account_id, name, type, budget_amount FROM accounts"
+            cur.execute(select_script)
+            values = cur.fetchall()
 
-    # Extract the values from the fetched data and convert them into a list of tuples
-    accounts_info = [(value[0], value[1], value[2], value[3]) for value in values]
+        # Extract the values from the fetched data and convert them into a list of tuples
+        accounts_info = [(value[0], value[1], value[2], value[3]) for value in values]
+    elif conn_type == "streamlit":
+        df = conn.query("SELECT account_id, name, type, budget_amount FROM accounts")
+        accounts_info = [tuple(x) for x in df.to_records(index=False)]
 
     return accounts_info
 
@@ -156,16 +163,20 @@ def add_expected_values(conn):
         conn.commit()
 
 
-def get_expected_total_values_by_type(conn):
-    with conn.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
-        cur.execute("SELECT * FROM expectations")
-        rows = cur.fetchall()
+def get_expected_total_values_by_type(conn, conn_type):
+    if conn_type == "postgres":
+        with conn.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
+            cur.execute("SELECT * FROM expectations")
+            rows = cur.fetchall()
 
-    # Convert the fetched data to a pandas DataFrame
-    df = pd.DataFrame(rows, columns=[desc[0] for desc in cur.description])
+        # Convert the fetched data to a pandas DataFrame
+        df = pd.DataFrame(rows, columns=[desc[0] for desc in cur.description])
+    elif conn_type == "streamlit":
+        df = conn.query("SELECT * FROM expectations")
+
     # Convert 'date_column' to datetime
     df['date'] = pd.to_datetime(df['date'])
     df['transaction_type'] = df['transaction_type'].str.strip()
     df['expected_value'] = df['expected_value'].astype(float)
-
+    
     return df
