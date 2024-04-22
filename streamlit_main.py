@@ -3,7 +3,7 @@ import streamlit as st
 
 from app.src.model.database import connect, close
 from app.src.model.model import Model
-from streamlit_plots import plot_cash_flow_summary_bar_chart, plot_actual_cash_allocation_pie_chart, plot_income_proportions_pie_chart
+from app.src.view.streamlit_view.streamlit_plots import plot_cash_flow_summary_bar_chart, plot_actual_cash_allocation_pie_chart, plot_income_proportions_pie_chart
 from datetime import datetime
 
 st.session_state.update(st.session_state)
