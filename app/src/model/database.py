@@ -5,9 +5,12 @@ import csv
 import pandas as pd
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
+import boto3
+import psycopg2
+from botocore.exceptions import ClientError
 
 
-def connect(credentials_file='/home/gunee/Projects/Gunee/homeBudget/app/conf/local/db_credentials.json'):
+def connect(credentials_file):
     # Load database credentials from the JSON file
     with open(credentials_file, 'r') as file:
         credentials = json.load(file)
@@ -52,12 +55,14 @@ def add_transaction_records(conn, file):
 
             # Iterate through CSV rows and insert into the database
             for row in csv_reader:
-                date_value = row[0]
+                date_value = row[4]
                 amount_value = float(row[1]) if row[1] else None
-                description_value = row[2]
-                balance_value = float(row[3]) if row[3] else None
+                description_value = row[5]
+                balance_value = float(row[8]) if row[8] else None
                 member_id = 1  # Replace with actual member ID
-                cur.execute(script, (member_id, date_value, amount_value, description_value, balance_value, None, None))
+                credit_account = row[3]
+                debit_account = row[2]
+                cur.execute(script, (member_id, date_value, amount_value, description_value, balance_value, credit_account, debit_account))
 
         # Commit the changes to the database
         conn.commit()
@@ -155,7 +160,7 @@ def add_expected_values(conn):
 
             for i in range(num_months):
                 this_month = prev_month + relativedelta(months=1)
-                cur.execute("INSERT INTO expectations (transaction_type, date, amount) VALUES (%s, %s, %s)",
+                cur.execute("INSERT INTO expectations (transaction_type, date, expected_value) VALUES (%s, %s, %s)",
                             (transaction_type, this_month, amount))
                 prev_month = this_month
 
@@ -180,3 +185,55 @@ def get_expected_total_values_by_type(conn, conn_type):
     df['expected_value'] = df['expected_value'].astype(float)
     
     return df
+
+
+def get_secret(secret_name, region_name):
+
+    # Create a Secrets Manager client
+    session = boto3.session.Session()
+    client = session.client(
+        service_name='secretsmanager',
+        region_name=region_name
+    )
+
+    try:
+        get_secret_value_response = client.get_secret_value(
+            SecretId=secret_name
+        )
+    except ClientError as e:
+        # For a list of exceptions thrown, see
+        # https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_GetSecretValue.html
+        raise e
+
+    secret = get_secret_value_response['SecretString']
+
+    return secret
+
+
+if __name__ == "__main__":
+    secret_name = "rds!db-719c2fd1-423b-4e63-b785-7b616f975982"
+    region_name = "ap-southeast-2"
+    secret = get_secret(secret_name, region_name)
+
+    secret_dict = json.loads(secret)
+
+    username = secret_dict['username']
+    passw = secret_dict['password']
+    print(username)
+    print(passw)
+
+    try:
+        conn = psycopg2.connect(host="terraform-20240419111553068200000001.cdf47oegxmwl.ap-southeast-2.rds.amazonaws.com",
+                                port='5432',
+                                database="homeBudget",
+                                user=username,
+                                password=passw)
+        print("Connected to database")
+    except psycopg2.DatabaseError as e:
+        print("Error connecting to database")
+        print(e)
+
+    add_transaction_records(conn, "/home/gunee/Projects/Gunee/homeBudget/data/03_primary/fake_transactions.csv")
+
+    conn.close()
+    print("Connection closed")
