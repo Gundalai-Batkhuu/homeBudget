@@ -1,6 +1,7 @@
 import streamlit as st
 
-from app.src.view.streamlit_view.streamlit_plots import plot_transactions_table
+from app.src.view.streamlit_view.streamlit_plots import plot_transactions_table, \
+    plot_monthly_cash_outflow_treemap_chart, plot_income_proportions_pie_chart
 
 st.session_state.update(st.session_state)
 
@@ -25,5 +26,10 @@ with st.sidebar:
                         placeholder='Select a year'
                         )
 
-st.header('Transactions list')
-plot_transactions_table(st.session_state.model.get_all_transactions_for_month(st.session_state.month, st.session_state.year))
+st.header('Income')
+
+income_account_proportions = st.session_state.model.get_sum_of_transactions_for_each_account_by_type_for_month(
+    st.session_state.month, st.session_state.year)
+
+
+plot_income_proportions_pie_chart(income_account_proportions)

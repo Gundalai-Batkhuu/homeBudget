@@ -169,7 +169,7 @@ def add_expected_values(conn):
 
 
 def get_expected_total_values_by_type(conn, conn_type):
-    if conn_type == "postgres":
+    if conn_type == "psycopg2":
         with conn.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
             cur.execute("SELECT * FROM expectations")
             rows = cur.fetchall()

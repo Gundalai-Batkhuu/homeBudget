@@ -26,7 +26,7 @@ def plot_monthly_cash_outflow_treemap_chart(expense_account_proportions: dict):
     st.plotly_chart(fig, theme="streamlit")
 
 
-def plot_all_transactions_for_month_table(transactions: list):
+def plot_transactions_table(transactions: list):
     date = [transaction.date for transaction in transactions]
     description = [transaction.description for transaction in transactions]
     amount = [transaction.money.amount for transaction in transactions]
@@ -46,10 +46,13 @@ def plot_cash_flow_summary_bar_chart(df: pd.DataFrame):
                  height=300,
                  orientation='h')
     fig.update_layout(
+        title='Cash flow summary',
         xaxis_title=None,
         yaxis_title=None,
         legend_title=None,
+        title_x=0.5
     )
+
     st.plotly_chart(fig)
 
 
@@ -59,7 +62,7 @@ def plot_actual_cash_allocation_pie_chart(expected_total_values_by_type: pd.Data
         expected_total_values_by_type,
         values='actual_values',
         names='transaction_type',
-        title='Actual cash allocation',
+        title='Actual allocation summary',
         width=500,
         height=400
     )

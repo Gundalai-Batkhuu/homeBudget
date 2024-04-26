@@ -1,7 +1,6 @@
 import streamlit as st
 
-from src.view.streamlit_view.streamlit_plots import plot_all_transactions_for_month_table, \
-    plot_monthly_cash_outflow_treemap_chart
+from app.src.view.streamlit_view.streamlit_plots import plot_transactions_table, plot_monthly_cash_outflow_treemap_chart
 
 st.session_state.update(st.session_state)
 
