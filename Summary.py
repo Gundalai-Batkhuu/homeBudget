@@ -59,15 +59,15 @@ with st.sidebar:
                         placeholder='Select a year'
                         )
 
-total_expense = float(st.session_state.model.get_sum_of_account_total_transaction_values_for_month_by_type("Expense",
+total_expense = float(st.session_state.model.get_total_amount_of_transactions_by_type_for_given_month("Expense",
                                                                                                            st.session_state.month,
                                                                                                            st.session_state.year))
-total_debt_repayments = st.session_state.model.get_sum_of_account_total_transaction_values_for_month_by_type(
+total_debt_repayments = st.session_state.model.get_total_amount_of_transactions_by_type_for_given_month(
     "Liability", st.session_state.month, st.session_state.year)
 total_income = float(
     st.session_state.model.get_total_amount_of_transactions_by_type_for_given_month("Income", st.session_state.month,
                                                                                     st.session_state.year))
-total_savings = total_income + total_expense + total_debt_repayments  # Wrong
+total_savings = total_income - total_expense - total_debt_repayments  # Wrong
 
 actual_total_values = pd.DataFrame({
     'transaction_type': ['Total Income', 'Total Expense', 'Total Debt Repayments', 'Total Savings'],
@@ -117,4 +117,4 @@ with col21:
     plot_cash_flow_summary_bar_chart(total_values_by_transaction_type)
 
 with col22:
-    plot_actual_cash_allocation_pie_chart(total_values_by_transaction_type[['transaction_type', 'actual_values']])
+    plot_actual_cash_allocation_pie_chart(total_values_by_transaction_type[['transaction_type', 'actual_values']].iloc[1:])

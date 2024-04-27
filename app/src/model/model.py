@@ -47,13 +47,6 @@ class Model:
         """
         return self.journal.get_transactions()
 
-    def get_total_expense_for_current_month(self):
-        """
-        Get the total monetary amount of all transactions for the current month
-        :return: The total monetary amount of all transactions for the current month
-        """
-        return self.journal.get_sum_of_transactions_by_type_for_given_month("Expense", datetime.now().month, datetime.now().year)
-
     def get_all_account_total_transaction_value_for_month_by_type(self, acc_type: str, month: datetime.month, year: datetime.year):
         """
         Get the total monetary amount of all transactions of a specific account type for the current month
@@ -94,12 +87,6 @@ class Model:
         :return: A list of all transactions for a specific month
         """
         return self.journal.get_all_transactions_for_month(month, year)
-
-    def get_sum_of_account_total_transaction_values_for_month_by_type(self, acc_type: str, month: datetime.month, year: datetime.year):
-        """
-        Get the sum of all accounts of an account type for the month
-        """
-        return self.ledger.get_sum_of_account_total_transaction_values_for_month_by_type(acc_type, month, year)
 
     def get_total_amount_of_transactions_by_type_for_given_month(self, trans_type, month, year):
         """
@@ -142,5 +129,10 @@ class Model:
     def get_ledger(self):
         return self.ledger
 
-
+    def get_all_transactions_by_type_for_month(self, trans_type, month, year):
+        """
+        Get all transactions of a specific type
+        :return:
+        """
+        return self.journal.get_all_transactions_by_type_for_month(trans_type, month, year)
 

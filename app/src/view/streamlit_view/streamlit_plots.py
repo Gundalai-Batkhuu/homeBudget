@@ -3,10 +3,10 @@ import plotly.express as px
 import streamlit as st
 
 
-def plot_monthly_cash_outflow_treemap_chart(expense_account_proportions: dict):
-    acc_names = list(expense_account_proportions.keys())
-    expense_amounts = [values[0] for values in expense_account_proportions.values()]
-    percentages = [values[1] for values in expense_account_proportions.values()]
+def plot_monthly_cash_outflow_treemap_chart(account_proportions: dict):
+    acc_names = list(account_proportions.keys())
+    expense_amounts = [values[0] for values in account_proportions.values()]
+    percentages = [values[1] for values in account_proportions.values()]
 
     fig = px.treemap(
         names=acc_names,
@@ -52,7 +52,12 @@ def plot_cash_flow_summary_bar_chart(df: pd.DataFrame):
         legend_title=None,
         title_x=0.5
     )
-
+    newnames = {'actual_values': 'Actual values', 'expected_value': 'Expected values'}
+    fig.for_each_trace(lambda t: t.update(name=newnames[t.name],
+                                          legendgroup=newnames[t.name],
+                                          hovertemplate=t.hovertemplate.replace(t.name, newnames[t.name])
+                                          )
+                       )
     st.plotly_chart(fig)
 
 

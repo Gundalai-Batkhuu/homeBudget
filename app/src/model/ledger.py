@@ -44,16 +44,6 @@ class Ledger:
                 result[name] = float(account.get_account_entries_sum_for_month(month, year))
         return result
 
-    def get_sum_of_account_total_transaction_values_for_month_by_type(self, acc_type: str, month: datetime.month, year: datetime.year):
-        """
-        Get the sum of all accounts of an account type for the month
-        """
-        accounts = self.get_account_total_transaction_values_for_month_by_type(acc_type, month, year)
-        amount_sum = 0
-
-        for account_name, amount in accounts.items():
-            amount_sum += amount
-        return amount_sum
 
     def get_account_expense_proportions_for_month_by_type(self, acc_type: str, month: datetime.month, year: datetime.year):
         """

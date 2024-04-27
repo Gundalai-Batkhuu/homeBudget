@@ -233,7 +233,7 @@ if __name__ == "__main__":
         print("Error connecting to database")
         print(e)
 
-    add_transaction_records(conn, "/home/gunee/Projects/Gunee/homeBudget/data/03_primary/fake_transactions.csv")
+    #add_transaction_records(conn, "/home/gunee/Projects/Gunee/homeBudget/data/03_primary/fake_transactions.csv")
 
     conn.close()
     print("Connection closed")

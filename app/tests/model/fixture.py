@@ -5,14 +5,14 @@ import pytest
 
 @pytest.fixture(scope="package")
 def model():
-    conn = connect()
-    yield Model(conn)
+    conn = connect("app/conf/local/db_credentials.json")
+    yield Model(conn, "psycopg2")
     close(conn)
 
 
 @pytest.fixture(scope="package")
 def cursor():
-    conn = connect()
+    conn = connect("app/conf/local/db_credentials.json")
     cursor = conn.cursor()
     yield cursor
     close(conn)

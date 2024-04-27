@@ -29,3 +29,6 @@ st.header('Expenses')
 expense_account_proportions = st.session_state.model.get_account_transaction_proportions_for_month_by_type("Expense", st.session_state.month, st.session_state.year)
 debt_account_proportions = st.session_state.model.get_account_transaction_proportions_for_month_by_type("Liability", st.session_state.month, st.session_state.year)
 plot_monthly_cash_outflow_treemap_chart({**expense_account_proportions, **debt_account_proportions})
+
+st.write('Expense transactions list')
+plot_transactions_table(st.session_state.model.get_all_transactions_by_type_for_month("Expense", st.session_state.month, st.session_state.year))

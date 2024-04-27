@@ -31,5 +31,7 @@ st.header('Income')
 income_account_proportions = st.session_state.model.get_sum_of_transactions_for_each_account_by_type_for_month(
     st.session_state.month, st.session_state.year)
 
-
 plot_income_proportions_pie_chart(income_account_proportions)
+
+st.write('Income transactions list')
+plot_transactions_table(st.session_state.model.get_all_transactions_by_type_for_month("Income", st.session_state.month, st.session_state.year))
