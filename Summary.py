@@ -42,8 +42,8 @@ if 'year' not in st.session_state:
     st.session_state.year = datetime.now().year
 
 if 'model' not in st.session_state:
-    st.session_state.model = get_model("streamlit")
-    #st.session_state.model = get_model("psycopg2")
+    #st.session_state.model = get_model("streamlit")
+    st.session_state.model = get_model("psycopg2")
 
 with st.sidebar:
     month_name = st.selectbox(
@@ -67,8 +67,9 @@ total_debt_repayments = st.session_state.model.get_total_amount_of_transactions_
 total_income = float(
     st.session_state.model.get_total_amount_of_transactions_by_type_for_given_month("Income", st.session_state.month,
                                                                                     st.session_state.year))
-total_savings = total_income - total_expense - total_debt_repayments  # Wrong
-
+total_savings = float(
+    st.session_state.model.get_total_amount_of_transactions_by_type_for_given_month("Saving", st.session_state.month,
+                                                                                    st.session_state.year))
 actual_total_values = pd.DataFrame({
     'transaction_type': ['Total Income', 'Total Expense', 'Total Debt Repayments', 'Total Savings'],
     'actual_values': [total_income, total_expense, total_debt_repayments, total_savings]

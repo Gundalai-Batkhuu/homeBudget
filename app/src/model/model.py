@@ -47,9 +47,9 @@ class Model:
         """
         return self.journal.get_transactions()
 
-    def get_all_account_total_transaction_value_for_month_by_type(self, acc_type: str, month: datetime.month, year: datetime.year):
+    def get_each_account_total_transaction_value_for_month_by_type(self, acc_type: str, month: datetime.month, year: datetime.year):
         """
-        Get the total monetary amount of all transactions of a specific account type for the current month
+        Get the total monetary amount of all transactions for each account of a specific account type for the current month
         """
         return self.ledger.get_account_total_transaction_values_for_month_by_type(acc_type, month, year)
 

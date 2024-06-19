@@ -26,18 +26,12 @@ resource "aws_db_instance" "home-budget" {
   port     = 5432
   publicly_accessible = true
   vpc_security_group_ids = [aws_security_group.postgres_homeBudget.id]
-
   manage_master_user_password   = true
-  master_user_secret_kms_key_id = aws_kms_key.example.key_id
 }
 
 ################################################################################
 # Supporting Resources
 ################################################################################
-
-resource "aws_kms_key" "example" {
-  description = "Example KMS Key"
-}
 
 # Fetch the default VPC
 resource "aws_default_vpc" "default" {
