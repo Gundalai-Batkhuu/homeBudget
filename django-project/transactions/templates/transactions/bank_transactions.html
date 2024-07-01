@@ -2,53 +2,63 @@
 
 {% block content %}
 
-    <div class="m-6">
-        <h1 class="text-2xl prose">Bank Transactions</h1>
-    </div>
-
     <div class="overflow-x-auto ml-4">
-        <table class="table prose">
+        <table class="table table-xs table-zebra">
             <thead>
             <tr>
                 <th>Date</th>
                 <th>Amount</th>
                 <th>Description</th>
                 <th>Bank Balance</th>
+                <th>Tokens</th>
+                <th>Credit Account</th>
+                <th>Debit Account</th>
                 <th>Category</th>
             </tr>
             </thead>
             <tbody>
-            {% for transaction in transactions %}
+            {% for transaction in page_obj %}
                 <tr>
                     <td>{{ transaction.date }}</td>
                     <td>{{ transaction.amount }}</td>
                     <td>{{ transaction.description }}</td>
                     <td>{{ transaction.bank_balance }}</td>
+                    <td>{{ transaction.tokens }}</td>
+                    <td>{{ transaction.credit_account }}</td>
+                    <td>{{ transaction.debit_account }}</td>
                     <td>
-                    <label>
-                        <select>
-                            {% for account in accounts %}
-                                <option value="{{ account.name }}">{{ account.name }}</option>
-                            {% endfor %}
-                        </select>
-                    </label>
-                </td>
+                        <form method="post" action="{% url 'update_debit_account' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="transaction_id" value="{{ transaction.id }}">
+                            <label>
+                                <select name="account_name" onchange="this.form.submit()">
+                                    {% for account in accounts %}
+                                        <option value="{{ account.name }}"
+                                                {% if account.name == transaction.debit_account.name %}selected{% endif %}>{{ account.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </label>
+                        </form>
+                    </td>
                 </tr>
             {% endfor %}
             </tbody>
         </table>
     </div>
 
+    <div class="pagination join prose">
+        {% if page_obj.has_previous %}
+            <button class="join-item btn"><a href="?page=1">&laquo; first</a></button>
+            <button class="join-item btn"><a href="?page={{ page_obj.previous_page_number }}">previous</a></button>
+        {% endif %}
 
-    <div class="stats text-primary-content prose">
-        <div class="stat">
-            <div class="stat-title">Account balance</div>
-            <div class="stat-value">$89,400</div>
-        </div>
-
-        <div class="stat">
-            <div class="stat-title">Budget balance</div>
-            <div class="stat-value">$89,400</div>
-        </div>
+        <button class="button btn-disabled">
+            <span class="current-page">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+        </button>
+        {% if page_obj.has_next %}
+            <button class="join-item btn"><a href="?page={{ page_obj.next_page_number }}">next</a></button>
+            <button class="join-item btn"><a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a></button>
+        {% endif %}
     </div>
+
 {% endblock %}

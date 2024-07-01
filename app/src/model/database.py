@@ -46,6 +46,7 @@ def fetch_data_from_db(conn, conn_type):
         return "Error: Invalid connection type."
     return df
 
+
 def add_transaction_records(conn, file):
     with conn.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
         # Read data from CSV file
@@ -62,7 +63,8 @@ def add_transaction_records(conn, file):
                 member_id = 1  # Replace with actual member ID
                 credit_account = row[3]
                 debit_account = row[2]
-                cur.execute(script, (member_id, date_value, amount_value, description_value, balance_value, credit_account, debit_account))
+                cur.execute(script, (
+                member_id, date_value, amount_value, description_value, balance_value, credit_account, debit_account))
 
         # Commit the changes to the database
         conn.commit()
@@ -183,12 +185,11 @@ def get_expected_total_values_by_type(conn, conn_type):
     df['date'] = pd.to_datetime(df['date'])
     df['transaction_type'] = df['transaction_type'].str.strip()
     df['expected_value'] = df['expected_value'].astype(float)
-    
+
     return df
 
 
 def get_secret(secret_name, region_name):
-
     # Create a Secrets Manager client
     session = boto3.session.Session()
     client = session.client(
@@ -223,11 +224,12 @@ if __name__ == "__main__":
     print(passw)
 
     try:
-        conn = psycopg2.connect(host="terraform-20240419111553068200000001.cdf47oegxmwl.ap-southeast-2.rds.amazonaws.com",
-                                port='5432',
-                                database="homeBudget",
-                                user=username,
-                                password=passw)
+        conn = psycopg2.connect(
+            host="terraform-20240419111553068200000001.cdf47oegxmwl.ap-southeast-2.rds.amazonaws.com",
+            port='5432',
+            database="homeBudget",
+            user=username,
+            password=passw)
         print("Connected to database")
     except psycopg2.DatabaseError as e:
         print("Error connecting to database")
