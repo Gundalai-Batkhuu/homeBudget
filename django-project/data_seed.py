@@ -16,7 +16,7 @@ def print_write(l: list, m: models.Model):
     m.objects.bulk_create(l)
 
 
-def seed_accounts():
+def add_accounts():
     d = {"Cash Transfer": ["ATM", "CASH"],
          "Credit Cards": ["Credit", "Card", "CBA", "CREDIT", "ZipPay", "StepPay"],
          "Inheritance": ["gegeen", "ULZIIBADRAKH", "Finmo"],
@@ -89,6 +89,6 @@ def add_bank_transaction_records():
 
 
 if __name__ == "__main__":
-    #seed_accounts()
+    add_accounts()
     add_bank_transaction_records()
     print("Data inserted successfully!")

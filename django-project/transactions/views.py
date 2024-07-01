@@ -1,6 +1,6 @@
 from django.shortcuts import render
-from transactions.models import BankTransaction
-
+from transactions.models import BankTransaction, Account
+from django.http import HttpResponse
 
 def index(request):
     context = {
@@ -10,17 +10,24 @@ def index(request):
 
 
 def get_bank_transactions(request):
-    transactions = []
-    for transaction in BankTransaction.objects.all():
-        transactions.append({
-            "date": transaction.date,
-            "description": transaction.description,
-            "amount": transaction.amount,
-            "bank_balance": transaction.bank_balance,
-        })
+    try:
+        accounts = Account.objects.all()
+        transactions = []
+        for transaction in BankTransaction.objects.all():
+            transactions.append({
+                "date": transaction.date,
+                "description": transaction.description,
+                "amount": transaction.amount,
+                "bank_balance": transaction.bank_balance,
+            })
 
-    context = {
-        "transactions": transactions,
-    }
+        context = {
+            "accounts": accounts,
+            "transactions": transactions,
+        }
 
-    return render(request, "transactions/bank_transactions.html", context)
+        return render(request, "transactions/bank_transactions.html", context)
+    except ValueError as e:
+        return HttpResponse(f"ValueError: {e}")
+    except Exception as e:
+        return HttpResponse(f"An error occurred: {e}")

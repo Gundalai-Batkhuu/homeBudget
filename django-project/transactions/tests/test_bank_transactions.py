@@ -4,6 +4,7 @@ from data_seed import add_bank_transaction_records
 from transactions.models import BankTransaction
 from transactions.util.bank_transactions import get_bank_transaction_records
 
+
 class BankTransactionTestCase(TestCase):
     def setUp(self):
         add_bank_transaction_records()
@@ -19,5 +20,3 @@ class BankTransactionTestCase(TestCase):
 
     def test_transaction_count_no_duplicates(self):
         self.assertEquals(self.len_bank_transactions, self.len_bank_transaction_records_set)
-
-

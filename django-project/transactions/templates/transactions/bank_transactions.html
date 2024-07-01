@@ -1,6 +1,7 @@
 {% extends 'transactions/base.html' %}
 
 {% block content %}
+
     <div class="m-6">
         <h1 class="text-2xl prose">Bank Transactions</h1>
     </div>
@@ -13,6 +14,7 @@
                 <th>Amount</th>
                 <th>Description</th>
                 <th>Bank Balance</th>
+                <th>Category</th>
             </tr>
             </thead>
             <tbody>
@@ -22,6 +24,15 @@
                     <td>{{ transaction.amount }}</td>
                     <td>{{ transaction.description }}</td>
                     <td>{{ transaction.bank_balance }}</td>
+                    <td>
+                    <label>
+                        <select>
+                            {% for account in accounts %}
+                                <option value="{{ account.name }}">{{ account.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </label>
+                </td>
                 </tr>
             {% endfor %}
             </tbody>
