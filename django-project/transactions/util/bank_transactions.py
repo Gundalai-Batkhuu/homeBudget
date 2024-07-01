@@ -22,12 +22,13 @@ def print_write(l: list, m: models.Model):
 
 
 def add_accounts():
-    d = {"Cash Transfer": ["ATM", "CASH"],
-         "Credit Cards": ["Credit", "Card", "CBA", "CREDIT", "ZipPay", "StepPay"],
+    d = {"Work Expenses": ["Microsoft", "GITHUB"],
+        "Cash Transfer": ["ATM", "CASH"],
+         "Credit Cards": ["Credit", "Card", "CBA", "CREDIT", "ZipPay", "StepPay", "ZipMoney"],
          "Inheritance": ["gegeen", "ULZIIBADRAKH", "Finmo"],
          "Nomi salary": ["Daily", "Edited"],
          "Gunee salary": ["NANJID", "TSELMEG"],
-         "Groceries": ["WOOLWORTHS", "COLES", "COSTCO", "ALDI", "M&J", "WW", "BAKERY", "MART", "IGA"],
+         "Groceries": ["WOOLWORTHS", "COLES", "COSTCO", "ALDI", "M&J", "WW", "BAKERY", "MART", "IGA", "SUPA"],
          "Eating out": ["OMI", "DOMINOS", "EATS", "MENULOG", "GRILLD", "BWS", "CAFE", "Menulog", "Coffee"],
          "Public Transport": ["TRANSPORTFORNSW"],
          "Petrol": ["Petroleum", "Caltex", "7-ELEVEN", "AMPOL"],
@@ -43,8 +44,8 @@ def add_accounts():
          "Other": ["Fee"],
          "Investments": ["Etoro"],
          "Emergency Fund": ["NETBANK"],
-         "Vices": ["KARKI"],
-         "Health": ["Sport", "EYE", "Chemist"],
+         "Vices": ["KARKI", "STEAMGAMES"],
+         "Health": ["Sport", "EYE", "Chemist", "PHARMACY", "Medical"],
          "Entertainment": ["DISNEY"],
          "Cash at bank": ["CASH"],
          "Misc": []}

@@ -13,7 +13,6 @@
                 <th>Tokens</th>
                 <th>Credit Account</th>
                 <th>Debit Account</th>
-                <th>Category</th>
             </tr>
             </thead>
             <tbody>
@@ -24,8 +23,20 @@
                     <td>{{ transaction.description }}</td>
                     <td>{{ transaction.bank_balance }}</td>
                     <td>{{ transaction.tokens }}</td>
-                    <td>{{ transaction.credit_account }}</td>
-                    <td>{{ transaction.debit_account }}</td>
+                    <td>
+                        <form method="post" action="{% url 'update_credit_account' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="transaction_id" value="{{ transaction.id }}">
+                            <label>
+                                <select name="account_name" onchange="this.form.submit()">
+                                    {% for account in accounts %}
+                                        <option value="{{ account.name }}"
+                                                {% if account.name == transaction.credit_account.name %}selected{% endif %}>{{ account.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </label>
+                        </form>
+                    </td>
                     <td>
                         <form method="post" action="{% url 'update_debit_account' %}">
                             {% csrf_token %}
