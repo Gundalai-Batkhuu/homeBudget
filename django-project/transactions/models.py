@@ -2,11 +2,26 @@ from django.db import models
 import uuid
 
 
+def get_default_debit_account():
+    return Account.objects.get(name='Misc').id
+
+
+def get_default_credit_account():
+    return Account.objects.get(name="Cash at bank").id
+
+def get_default_debit_entry():
+    return AccountingEntry.objects.get(type='Debit').id
+
+def get_default_credit_entry():
+    return AccountingEntry.objects.get(type='Credit').id
+
+
 class AccountingEntry(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    #bank_transaction = models.ForeignKey('BankTransaction', on_delete=models.CASCADE, null=False)
+    bank_transaction = models.ForeignKey('BankTransaction', on_delete=models.CASCADE, default=1)
+    account = models.ForeignKey('Account', on_delete=models.CASCADE, default=1)
     date = models.DateField()
-    type = models.CharField(max_length=100)
+    type = models.CharField(max_length=6)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     description = models.CharField(max_length=100)
 
@@ -17,7 +32,6 @@ class AccountingEntry(models.Model):
 class Account(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=100)
-    entries = models.ManyToManyField(AccountingEntry)
     type = models.CharField(max_length=100)
     balance = models.DecimalField(max_digits=10, decimal_places=2)
     keywords = models.JSONField()
@@ -31,20 +45,13 @@ class AccountingTransaction(models.Model):
     date = models.DateField()
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     description = models.CharField(max_length=100)
-    from_account = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='from_account')
-    to_account = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='to_account')
-    transaction_type = models.CharField(max_length=100)
+    debit_account = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='accounting_transaction_debit_account', default=get_default_debit_account)
+    credit_account = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='accounting_transaction_credit_account', default=get_default_credit_account)
+    debit_entry = models.ForeignKey(AccountingEntry, on_delete=models.CASCADE, related_name='debit_entry', default=get_default_debit_entry)
+    credit_entry = models.ForeignKey(AccountingEntry, on_delete=models.CASCADE, related_name='credit_entry', default=get_default_credit_entry)
 
     def __str__(self):
         return self.description
-
-
-def get_default_debit_account():
-    return Account.objects.get(name='Misc').id
-
-
-def get_default_credit_account():
-    return Account.objects.get(name='Cash at bank').id
 
 
 class BankTransaction(models.Model):
@@ -54,9 +61,9 @@ class BankTransaction(models.Model):
     description = models.CharField(max_length=100)
     bank_balance = models.DecimalField(max_digits=10, decimal_places=2)
     tokens = models.JSONField(default=dict)
-    debit_account = models.ForeignKey(Account, on_delete=models.SET_DEFAULT, related_name="debit_account",
+    debit_account = models.ForeignKey(Account, on_delete=models.SET_DEFAULT, related_name="bank_transaction_debit_account",
                                       default=get_default_debit_account)
-    credit_account = models.ForeignKey(Account, on_delete=models.SET_DEFAULT, related_name="credit_account",
+    credit_account = models.ForeignKey(Account, on_delete=models.SET_DEFAULT, related_name="bank_transaction_credit_account",
                                        default=get_default_credit_account)
 
     class Meta:

@@ -16,9 +16,9 @@ def index(request):
 def get_bank_transactions(request):
     try:
         accounts = Account.objects.all()
-        transactions = BankTransaction.objects.all()
+        transactions = BankTransaction.objects.all().order_by('-date')
 
-        paginator = Paginator(transactions, 9)  # Show 10 transactions per page
+        paginator = Paginator(transactions, 20)
         page_number = request.GET.get('page')
         page_obj = paginator.get_page(page_number)
 
@@ -37,9 +37,9 @@ def get_bank_transactions(request):
 def get_misc_bank_transactions(request):
     try:
         accounts = Account.objects.all()
-        transactions = BankTransaction.objects.filter(debit_account__name='Misc')
-
-        paginator = Paginator(transactions, 9)  # Show 10 transactions per page
+        transactions = BankTransaction.objects.filter(debit_account__name='Misc').order_by('-date')
+        
+        paginator = Paginator(transactions, 20)  # Show 10 transactions per page
         page_number = request.GET.get('page')
         page_obj = paginator.get_page(page_number)
 

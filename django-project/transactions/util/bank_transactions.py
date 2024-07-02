@@ -22,32 +22,34 @@ def print_write(l: list, m: models.Model):
 
 
 def add_accounts():
-    d = {"Work Expenses": ["Microsoft", "GITHUB"],
+    d = {"Work Expenses": ["Microsoft", "GITHUB", "RAILWAY", "CHATGPT", "LinkedIn", "OPENAI"],
         "Cash Transfer": ["ATM", "CASH"],
-         "Credit Cards": ["Credit", "Card", "CBA", "CREDIT", "ZipPay", "StepPay", "ZipMoney"],
-         "Inheritance": ["gegeen", "ULZIIBADRAKH", "Finmo"],
+         "Credit Cards": ["Credit", "Card", "CBA", "CREDIT", "ZipPay", "StepPay", "ZipMoney", "ZipMny"],
+         "Inheritance": ["gegeen", "ULZIIBADRAKH", "Finmo", "ADIYA"],
          "Nomi salary": ["Daily", "Edited"],
          "Gunee salary": ["NANJID", "TSELMEG"],
-         "Groceries": ["WOOLWORTHS", "COLES", "COSTCO", "ALDI", "M&J", "WW", "BAKERY", "MART", "IGA", "SUPA"],
-         "Eating out": ["OMI", "DOMINOS", "EATS", "MENULOG", "GRILLD", "BWS", "CAFE", "Menulog", "Coffee"],
-         "Public Transport": ["TRANSPORTFORNSW"],
-         "Petrol": ["Petroleum", "Caltex", "7-ELEVEN", "AMPOL"],
-         "Rego": ["RMS", "SERVICE"],
-         "Parking": ["WILSON"],
+         "Groceries": ["WOOLWORTHS", "TILBA", "THIRSTY", "COLES", "COSTCO", "ALDI", "M&J", "WW", "BAKERY", "MART", "IGA", "SUPA", "SUPAEXPRESS", ],
+         "Eating out": ["OMI", "DOMINOS", "EATS", "MENULOG", "GRILLD", "BWS", "CAFE", "Menulog", "Coffee", "Hungry", "MCDONALDS", "SUSHI", "KFC", "PIZZA", "BURGER", "Gelato", "COFFEE", "DONUTS", "Sharetea"],
+         "Public Transport": ["TRANSPORTFORNSW", "TRANSPORT"],
+         "Petrol": ["Petroleum", "Caltex", "7-ELEVEN", "AMPOL", "BP", "ELEVEN"],
+         "Rego": ["RMS", "SERVICE", "ACCESS"],
+         "Parking": ["WILSON", "PARKING", "WIlsonParkingBenjamin", "WilsonParkingANUCanber"],
          "Car Insurance": ["BUDGET"],
-         "Rent": ["Rental", "Ray", "White", "EDGE"],
-         "Home": ["BUNNINGS", "Big", "W", "IKEA", "eBay"],
+         "Rent": ["Rental", "Ray", "White", "EDGE", "RENT", "DEFT"],
+         "Home": ["BUNNINGS", "Big", "W", "IKEA", "eBay", "AMAZON", "COTTON", "KATHMANDU", "KMART", "MKTPLC", "OFFICEWORKS", "Uniqlo", "UNIQLO", "SEPHORA", "ANACONDA"],
          "Grooming": ["CHEMIST", "HAIR"],
          "Insurance": ["BUPA"],
-         "Mobile & Internet": ["VODAFONE"],
-         "Electricity & Gas": ["AGL"],
+         "Mobile & Internet": ["VODAFONE", "Vodafone"],
+         "Electricity & Gas": ["AGL", "REAMPED", "ORIGIN"],
          "Other": ["Fee"],
          "Investments": ["Etoro"],
          "Emergency Fund": ["NETBANK"],
-         "Vices": ["KARKI", "STEAMGAMES"],
-         "Health": ["Sport", "EYE", "Chemist", "PHARMACY", "Medical"],
-         "Entertainment": ["DISNEY"],
+         "Vices": ["KARKI", "STEAMGAMES", "LIQUORLAND", "STEAM", "SMOKE"],
+         "Health": ["Sport", "EYE", "Chemist", "PHARMACY", "Medical", "Fit", "Leisure", "Tsz"],
+         "Entertainment": ["DISNEY", "AMZNPRIMEAU", "Disney", "Kindle", "YOUTUBEPREMIUM"],
          "Cash at bank": ["CASH"],
+         "Gifts": ["GIFT", "PRESENT", "Hartog", "RMWilliams", "Gift"],
+         "Leisure and Travel": ["TOURSIM", "Hotel", "Booking", "BlocHaus"],
          "Misc": []}
 
     accounts = []
@@ -91,7 +93,7 @@ def process_description(text):
 
     # Removes stopwords and numeric values from a list of tokens
     stop_words = set(stopwords.words('english'))
-    stop_words.update({'value', 'date', 'card', 'au', 'aus', 'xx5824', 'canberra', 'sydney', 'melbourne'})
+    stop_words.update({'value', 'date', 'card', 'au', 'aus', 'xx5824', 'canberra', 'sydney', 'melbourne', 'xx1656', 'DICKSON', 'BRUCE', 'Fyshwick', 'xx7543'})
 
     filtered_sentence = []
     for w in tokens:

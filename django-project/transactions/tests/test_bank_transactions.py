@@ -12,6 +12,7 @@ class BankTransactionTestCase(TestCase):
         self.bank_transaction_records = get_bank_transaction_records()
         self.len_bank_transactions = len(self.bank_transactions)
         self.len_bank_transaction_records = len(self.bank_transaction_records)
+        print(self.len_bank_transaction_records)
         self.bank_transaction_records_set = set(tuple(record) for record in self.bank_transaction_records)
         self.len_bank_transaction_records_set = len(self.bank_transaction_records_set)
 
