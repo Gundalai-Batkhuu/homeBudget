@@ -12,8 +12,9 @@
         <h1 class="text-xl">Bank Transactions</h1>
     </div>
     <div class="flex">
-            <button class="btn"><a href="{% url 'bank_transactions' %}">Bank Transactions</a></button>
-            <button class="btn"><a href="{% url 'misc_bank_transactions' %}">Misc Bank Transactions</a></button>
+        <button class="btn"><a href="{% url 'get_all_accounting_transactions' %}">Accounts</a></button>
+        <button class="btn"><a href="{% url 'bank_transactions' %}">Bank Transactions</a></button>
+        <button class="btn"><a href="{% url 'misc_bank_transactions' %}">Misc Bank Transactions</a></button>
     </div>
 </div>
 

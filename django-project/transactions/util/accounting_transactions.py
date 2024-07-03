@@ -14,7 +14,7 @@ def add_accounting_transactions():
             account=transaction.debit_account,
             date=transaction.date,
             type='Debit',
-            amount=transaction.amount,
+            amount=abs(transaction.amount),
             description=transaction.description
         )
         credit_entry = AccountingEntry(
@@ -22,7 +22,7 @@ def add_accounting_transactions():
             account=transaction.credit_account,
             date=transaction.date,
             type='Credit',
-            amount=transaction.amount,
+            amount=abs(transaction.amount),
             description=transaction.description
         )
         debit_entry.save()
