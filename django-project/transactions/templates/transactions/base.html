@@ -1,10 +1,10 @@
-{% load static %}
+{% load static tailwind_tags %}
 <!DOCTYPE html>
 <html lang="en" data-theme="pastel">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
-    <link href="{% static 'css/output.css' %}" rel="stylesheet"/>
+    <title>Home Budget</title>
+    {% tailwind_css %}
 </head>
 <body>
 <div class="navbar bg-base-100 shadow-lg p-4 flex justify-between">
