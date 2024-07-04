@@ -3,7 +3,7 @@ import django
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
 django.setup()
-from transactions.models import BankTransaction, AccountingEntry, Account, AccountingTransaction
+from transactions.models import BankTransaction, AccountingEntry, Account, AccountingTransaction, BudgetSuperCategory
 
 
 def add_accounting_transactions():
@@ -38,3 +38,6 @@ def add_accounting_transactions():
             credit_entry=credit_entry
         )
         accounting_transaction.save()
+
+
+

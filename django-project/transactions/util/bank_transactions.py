@@ -13,7 +13,7 @@ from nltk.tokenize import RegexpTokenizer
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
 django.setup()
 
-from transactions.models import Account, BankTransaction, AccountingEntry, AccountingTransaction
+from transactions.models import Account, BankTransaction, AccountingEntry, AccountingTransaction, BudgetSuperCategory
 
 
 def print_write(l: list, m: models.Model):
@@ -22,50 +22,82 @@ def print_write(l: list, m: models.Model):
 
 
 def add_accounts():
-    d = {"Work Expenses": ["Microsoft", "GITHUB", "RAILWAY", "CHATGPT", "LinkedIn", "OPENAI"],
-        "Cash Transfer": ["ATM", "CASH"],
-         "Credit Cards": ["Credit", "Card", "CBA", "CREDIT", "ZipPay", "StepPay", "ZipMoney", "ZipMny"],
-         "Inheritance": ["gegeen", "ULZIIBADRAKH", "Finmo", "ADIYA"],
-         "Nomi salary": ["Daily", "Edited"],
-         "Gunee salary": ["NANJID", "TSELMEG"],
-         "Groceries": ["WOOLWORTHS", "TILBA", "THIRSTY", "COLES", "COSTCO", "ALDI", "M&J", "WW", "BAKERY", "MART", "IGA", "SUPA", "SUPAEXPRESS", ],
-         "Eating out": ["OMI", "DOMINOS", "EATS", "MENULOG", "GRILLD", "BWS", "CAFE", "Menulog", "Coffee", "Hungry", "MCDONALDS", "SUSHI", "KFC", "PIZZA", "BURGER", "Gelato", "COFFEE", "DONUTS", "Sharetea"],
-         "Public Transport": ["TRANSPORTFORNSW", "TRANSPORT"],
-         "Petrol": ["Petroleum", "Caltex", "7-ELEVEN", "AMPOL", "BP", "ELEVEN"],
-         "Rego": ["RMS", "SERVICE", "ACCESS"],
-         "Parking": ["WILSON", "PARKING", "WIlsonParkingBenjamin", "WilsonParkingANUCanber"],
-         "Car Insurance": ["BUDGET"],
-         "Rent": ["Rental", "Ray", "White", "EDGE", "RENT", "DEFT"],
-         "Home": ["BUNNINGS", "Big", "W", "IKEA", "eBay", "AMAZON", "COTTON", "KATHMANDU", "KMART", "MKTPLC", "OFFICEWORKS", "Uniqlo", "UNIQLO", "SEPHORA", "ANACONDA"],
-         "Grooming": ["CHEMIST", "HAIR"],
-         "Insurance": ["BUPA"],
-         "Mobile & Internet": ["VODAFONE", "Vodafone"],
-         "Electricity & Gas": ["AGL", "REAMPED", "ORIGIN"],
-         "Other": ["Fee"],
-         "Investments": ["Etoro"],
-         "Emergency Fund": ["NETBANK"],
-         "Vices": ["KARKI", "STEAMGAMES", "LIQUORLAND", "STEAM", "SMOKE"],
-         "Health": ["Sport", "EYE", "Chemist", "PHARMACY", "Medical", "Fit", "Leisure", "Tsz"],
-         "Entertainment": ["DISNEY", "AMZNPRIMEAU", "Disney", "Kindle", "YOUTUBEPREMIUM"],
-         "Cash at bank": ["CASH"],
-         "Gifts": ["GIFT", "PRESENT", "Hartog", "RMWilliams", "Gift"],
-         "Leisure and Travel": ["TOURSIM", "Hotel", "Booking", "BlocHaus"],
-         "Misc": []}
+    d = {
+        "Revenue": {
+            "Nomi salary": ["Daily", "Edited"],
+            "Gunee salary": ["NANJID", "TSELMEG"],
+            "Inheritance": ["gegeen", "ULZIIBADRAKH", "Finmo", "ADIYA"],
+        },
+        "Work-related": {
+            "Work Expenses": ["Microsoft", "GITHUB", "RAILWAY", "CHATGPT", "LinkedIn", "OPENAI"],
+        },
+        "Living Expenses": {
+            "Groceries": ["WOOLWORTHS", "TILBA", "THIRSTY", "COLES", "COSTCO", "ALDI", "M&J", "WW", "BAKERY", "MART", "IGA", "SUPA", "SUPAEXPRESS"],
+            "Eating out": ["OMI", "DOMINOS", "EATS", "MENULOG", "GRILLD", "BWS", "CAFE", "Menulog", "Coffee", "Hungry", "MCDONALDS", "SUSHI", "KFC", "PIZZA", "BURGER", "Gelato", "COFFEE", "DONUTS", "Sharetea"],
+            "Rent": ["Rental", "Ray", "White", "EDGE", "RENT", "DEFT"],
+            "Electricity & Gas": ["AGL", "REAMPED", "ORIGIN"],
+            "Mobile & Internet": ["VODAFONE", "Vodafone"],
+            "Home": ["BUNNINGS", "Big", "W", "IKEA", "eBay", "AMAZON", "COTTON", "KATHMANDU", "KMART", "MKTPLC", "OFFICEWORKS", "Uniqlo", "UNIQLO", "SEPHORA", "ANACONDA"],
+        },
+        "Transportation": {
+            "Public Transport": ["TRANSPORTFORNSW", "TRANSPORT"],
+            "Petrol": ["Petroleum", "Caltex", "7-ELEVEN", "AMPOL", "BP", "ELEVEN"],
+            "Rego": ["RMS", "SERVICE", "ACCESS"],
+            "Parking": ["WILSON", "PARKING", "WIlsonParkingBenjamin", "WilsonParkingANUCanber"],
+            "Car Insurance": ["BUDGET"],
+        },
+        "Personal": {
+            "Grooming": ["CHEMIST", "HAIR"],
+            "Health": ["Sport", "EYE", "Chemist", "PHARMACY", "Medical", "Fit", "Leisure", "Tsz"],
+            "Entertainment": ["DISNEY", "AMZNPRIMEAU", "Disney", "Kindle", "YOUTUBEPREMIUM"],
+            "Vices": ["KARKI", "STEAMGAMES", "LIQUORLAND", "STEAM", "SMOKE"],
+            "Leisure and Travel": ["TOURSIM", "Hotel", "Booking", "BlocHaus"],
+            "Gifts": ["GIFT", "PRESENT", "Hartog", "RMWilliams", "Gift"],
+        },
+        "Insurance": {
+            "Insurance": ["BUPA"],
+        },
+        "Financial Expenses": {
+            "Credit Cards": ["Credit", "Card", "CBA", "CREDIT", "ZipPay", "StepPay", "ZipMoney", "ZipMny"],
+        },
+        "Other Expenses": {
+            "Other": ["Fee"],
+            "Misc": [],
+        },
+        "Not Categorized": {
+            "Cash Transfer": ["ATM", "CASH"],
+            "Investments": ["Etoro"],
+            "Emergency Fund": ["NETBANK"],
+            "Cash at bank": ["CASH"],
+        }
+    }
 
     accounts = []
 
-    for name, keywords in d.items():
-        # Check if the account already exists
-        existing_account = Account.objects.filter(name=name).first()
-        if existing_account is None:
-            # If the account does not exist, create it
-            account = Account(
-                name=name,
-                type="default_type",
-                keywords=keywords,
-                balance=0
-            )
-            account.save()
+    for budget_category, subcategories in d.items():
+        # Create or get the BudgetSuperCategory
+        budget_super_category, _ = BudgetSuperCategory.objects.get_or_create(name=budget_category)
+
+        for name, keywords in subcategories.items():
+            # Check if the account already exists
+            existing_account = Account.objects.filter(name=name).first()
+            if existing_account is None:
+                # If the account does not exist, create it
+                account = Account(
+                    name=name,
+                    type="default_type",
+                    keywords=keywords,
+                    balance=0,
+                    budget_category=budget_super_category
+                )
+                account.save()
+                accounts.append(account)
+            else:
+                # If the account exists, update its budget category
+                existing_account.budget_category = budget_super_category
+                existing_account.save()
+                accounts.append(existing_account)
+    return accounts
 
 
 def get_bank_transaction_records():
@@ -87,13 +119,14 @@ def get_bank_transaction_records():
 
 
 def process_description(text):
-
     # Tokenizes the text
     tokens = RegexpTokenizer(r'\w+').tokenize(text)
 
     # Removes stopwords and numeric values from a list of tokens
     stop_words = set(stopwords.words('english'))
-    stop_words.update({'value', 'date', 'card', 'au', 'aus', 'xx5824', 'canberra', 'sydney', 'melbourne', 'xx1656', 'DICKSON', 'BRUCE', 'Fyshwick', 'xx7543'})
+    stop_words.update(
+        {'value', 'date', 'card', 'au', 'aus', 'xx5824', 'canberra', 'sydney', 'melbourne', 'xx1656', 'DICKSON',
+         'BRUCE', 'Fyshwick', 'xx7543'})
 
     filtered_sentence = []
     for w in tokens:
@@ -125,7 +158,6 @@ def assign_category(tokens, amount_value):
     return debit_account, credit_account
 
 
-
 def add_bank_transaction_records(transactions):
     bank_transactions = []
     for row in transactions:
@@ -148,5 +180,3 @@ def add_bank_transaction_records(transactions):
         bank_transactions.append(bank_transaction)
 
     BankTransaction.objects.bulk_create(bank_transactions, ignore_conflicts=True)
-
-

@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from transactions.models import BankTransaction, Account, AccountingTransaction
+from transactions.models import BankTransaction, Account, AccountingTransaction, BudgetSuperCategory
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_protect
 import json
@@ -144,3 +144,18 @@ def get_account_transactions(request):
             return HttpResponse(f"ValueError: {e}")
         except Exception as e:
             return HttpResponse(f"An error occurred: {e}")
+
+
+def get_budget(request):
+    budget_categories = BudgetSuperCategory.objects.all()
+    accounts = Account.objects.all()
+    categorised_accounts = {}
+    for category in budget_categories:
+        categorised_accounts[category.name] = Account.objects.filter(budget_category=category)
+
+    context = {
+        "accounts": accounts,
+        "budget_categories": budget_categories,
+        "categorised_accounts": categorised_accounts,
+    }
+    return render(request, "transactions/budget.html", context)

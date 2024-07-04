@@ -35,6 +35,7 @@ class Account(models.Model):
     type = models.CharField(max_length=100)
     balance = models.DecimalField(max_digits=10, decimal_places=2)
     keywords = models.JSONField()
+    budget_category = models.ForeignKey('BudgetSuperCategory', on_delete=models.CASCADE, default='Needs')
 
     def __str__(self):
         return self.name
@@ -76,3 +77,14 @@ class BankTransaction(models.Model):
 
     def __str__(self):
         return self.description
+
+
+class BudgetSuperCategory(models.Model):
+    """
+    This model is used to group budget categories into super categories such as 'Needs', 'Wants', 'Savings', etc.
+    """
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=100)
+    def __str__(self):
+        return self.name
+

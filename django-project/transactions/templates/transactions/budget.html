@@ -1,0 +1,83 @@
+{% extends 'transactions/base.html' %}
+
+{% block content %}
+<div class="flex w-full">
+    <!-- Income Statement Table -->
+    <div class="w-1/2 pr-4">
+        <table class="table table-xs prose w-full">
+            <thead>
+                <tr class="border-none">
+                    <th colspan="2" class="text-xl">Income Statement</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th colspan="2">Revenue</th>
+                </tr>
+                {% for account in categorised_accounts.Revenue %}
+                    <tr class="border-none">
+                        <td>{{ account.name }}</td>
+                        <td>{{ account.amount }}</td>
+                    </tr>
+                {% endfor %}
+
+                <tr>
+                    <th colspan="2">Expenses</th>
+                </tr>
+                {% for category, accounts in categorised_accounts.items %}
+                    {% if category != 'Revenue' %}
+                        <tr>
+                            <th colspan="2">{{ category }}</th>
+                        </tr>
+                        {% for account in accounts %}
+                            <tr class="border-none">
+                                <td>{{ account.name }}</td>
+                                <td>{{ account.amount }}</td>
+                            </tr>
+                        {% endfor %}
+                    {% endif %}
+                {% endfor %}
+
+                <tr>
+                    <th>Total Revenue</th>
+                    <td>{{ total_revenue }}</td>
+                </tr>
+                <tr>
+                    <th>Total Expenses</th>
+                    <td>{{ total_expenses }}</td>
+                </tr>
+                <tr>
+                    <th>Net Income</th>
+                    <td>{{ net_income }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Date Component -->
+    <div class="w-1/2 pl-4 flex items-start justify-start">
+        <div class="flex flex-row items-center gap-4 p-4 bg-base-200 rounded-lg shadow-md mb-4 prose">
+            <div class="form-control">
+                <label class="label">
+                    <span class="label-text">Start Date</span>
+                </label>
+                <input type="date" id="start-date" class="input input-bordered w-full max-w-xs" onchange="updateEndDate()">
+            </div>
+            <div class="form-control">
+                <label class="label">
+                    <span class="label-text">End Date</span>
+                </label>
+                <input type="date" id="end-date" class="input input-bordered w-full max-w-xs" disabled>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function updateEndDate() {
+        const startDate = new Date(document.getElementById('start-date').value);
+        const endDate = new Date(startDate.getTime() + 14 * 24 * 60 * 60 * 1000);
+        document.getElementById('end-date').valueAsDate = endDate;
+    }
+</script>
+{% endblock %}
