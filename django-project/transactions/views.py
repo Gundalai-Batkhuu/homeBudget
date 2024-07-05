@@ -1,10 +1,14 @@
 from django.shortcuts import render, redirect
-from transactions.models import BankTransaction, Account, AccountingTransaction, BudgetSuperCategory
+from transactions.models import BankTransaction, Account, AccountingTransaction, BudgetSuperCategory, AccountingEntry
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_protect
 import json
 from django.core.paginator import Paginator
 from django.db.models import Q
+from django.db.models import Sum
+from datetime import datetime, timedelta
+from django.utils import timezone
+
 
 def index(request):
     context = {
@@ -146,16 +150,62 @@ def get_account_transactions(request):
             return HttpResponse(f"An error occurred: {e}")
 
 
-def get_budget(request):
+from django.db.models import Sum
+
+from django.db.models import Sum
+from django.db.models import Q
+
+from django.db.models import Sum
+
+
+def get_income_statement(request):
     budget_categories = BudgetSuperCategory.objects.all()
-    accounts = Account.objects.all()
-    categorised_accounts = {}
-    for category in budget_categories:
-        categorised_accounts[category.name] = Account.objects.filter(budget_category=category)
+    accounts = Account.objects.exclude(name="Cash at bank")
+
+    # Get custom date range if provided
+    custom_start_date = request.GET.get('start_date')
+    custom_end_date = request.GET.get('end_date')
+
+    # Get the period offset for 4-week periods
+    period_offset = int(request.GET.get('period_offset', 0))
+
+    # Determine which date range to use
+    if custom_start_date and custom_end_date:
+        start_date = datetime.strptime(custom_start_date, '%Y-%m-%d').date()
+        end_date = datetime.strptime(custom_end_date, '%Y-%m-%d').date()
+        is_custom_range = True
+    else:
+        # Calculate 4-week period
+        end_date = timezone.now().date() - timedelta(days=28 * period_offset)
+        start_date = end_date - timedelta(days=27)
+        is_custom_range = False
+
+    for account in accounts:
+        balance_query = AccountingEntry.objects.filter(account=account)
+
+        # Apply date filters if provided
+        if start_date:
+            balance_query = balance_query.filter(date__gte=start_date)
+        if end_date:
+            balance_query = balance_query.filter(date__lte=end_date)
+
+        total_amount = balance_query.aggregate(Sum('amount'))['amount__sum'] or 0
+        account.balance = total_amount
+        account.save()
+
+    categorised_accounts = {
+        category.name: Account.objects.filter(budget_category=category).exclude(name="Cash at bank")
+        for category in budget_categories
+    }
 
     context = {
-        "accounts": accounts,
-        "budget_categories": budget_categories,
         "categorised_accounts": categorised_accounts,
+        "budget_categories": budget_categories,
+        "start_date": start_date,
+        "end_date": end_date,
+        "is_custom_range": is_custom_range,
+        "period_offset": period_offset,
+        "prev_period": period_offset + 1,
+        "next_period": period_offset - 1 if period_offset > 0 else None,
     }
-    return render(request, "transactions/budget.html", context)
+    return render(request, "transactions/income_statement.html", context)

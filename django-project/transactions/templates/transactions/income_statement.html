@@ -1,0 +1,104 @@
+{% extends 'transactions/base.html' %}
+
+{% block content %}
+    <div class="flex w-full">
+        <!-- Income Statement Table -->
+        <div class="w-1/2 pr-4">
+            <table class="table table-xs prose">
+                <thead>
+                <tr class="border-none">
+                    <th colspan="2" class="text-xl">Income Statement</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <th colspan="2">Revenue</th>
+                </tr>
+                {% for account in categorised_accounts.Revenue %}
+                    <tr class="border-none">
+                        <td>{{ account.name }}</td>
+                        <td>{{ account.balance }}</td>
+                    </tr>
+                {% endfor %}
+
+                <tr>
+                    <th colspan="2">Expenses</th>
+                </tr>
+                {% for category, accounts in categorised_accounts.items %}
+                    {% if category != 'Revenue' %}
+                        <tr>
+                            <th colspan="2">{{ category }}</th>
+                        </tr>
+                        {% for account in accounts %}
+                            <tr class="border-none">
+                                <td>{{ account.name }}</td>
+                                <td>{{ account.balance }}</td>
+                            </tr>
+                        {% endfor %}
+                    {% endif %}
+                {% endfor %}
+
+                <tr>
+                    <th>Total Revenue</th>
+                    <td>{{ total_revenue }}</td>
+                </tr>
+                <tr>
+                    <th>Total Expenses</th>
+                    <td>{{ total_expenses }}</td>
+                </tr>
+                <tr>
+                    <th>Net Income</th>
+                    <td>{{ net_income }}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Date Component -->
+        <div class="w-full md:w-1/2 pl-4 flex flex-col items-start justify-start space-y-4">
+            <form method="GET" action="{% url 'get_income_statement' %}" class="w-full">
+                <div class="flex flex-row space-x-2 p-4 bg-base-200 rounded-lg shadow-md mb-4 items-center">
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">Start Date</span>
+                        </label>
+                        <input type="date" id="start-date" name="start_date"
+                               class="input input-bordered w-full max-w-xs">
+                    </div>
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">End Date</span>
+                        </label>
+                        <input type="date" id="end-date" name="end_date"
+                               class="input input-bordered w-full max-w-xs">
+                    </div>
+                    <button type="submit" class="btn btn-primary w-full md:w-auto self-end">Apply Custom Range</button>
+                </div>
+            </form>
+        
+            {% if is_custom_range %}
+                <p class="prose">Showing custom date range: {{ start_date|date:"M d, Y" }}
+                    to {{ end_date|date:"M d, Y" }}</p>
+            {% else %}
+                <div class="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-4">
+                    <a href="{% url 'get_income_statement' %}?period_offset={{ prev_period }}"
+                       class="btn btn-outline btn-sm">&larr; Previous 4 Weeks</a>
+                    {% if next_period is not None %}
+                        <a href="{% url 'get_income_statement' %}?period_offset={{ next_period }}"
+                           class="btn btn-outline btn-sm">Next 4 Weeks &rarr;</a>
+                    {% endif %}
+                </div>
+                <p class="text-sm text-base-content">Showing 4-week period: {{ start_date|date:"M d, Y" }}
+                    to {{ end_date|date:"M d, Y" }}</p>
+            {% endif %}
+        
+        </div>
+
+        <script>
+            function updateEndDate() {
+                const startDate = new Date(document.getElementById('start-date').value);
+                const endDate = new Date(startDate.getTime() + 14 * 24 * 60 * 60 * 1000);
+                document.getElementById('end-date').valueAsDate = endDate;
+            }
+        </script>
+{% endblock %}
