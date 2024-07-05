@@ -29,44 +29,47 @@ def add_accounts():
             "Inheritance": ["gegeen", "ULZIIBADRAKH", "Finmo", "ADIYA"],
         },
         "Work-related": {
-            "Work Expenses": ["Microsoft", "GITHUB", "RAILWAY", "CHATGPT", "LinkedIn", "OPENAI"],
+            "Work Expenses": ["Microsoft", "GITHUB", "RAILWAY", "CHATGPT", "LinkedIn", "OPENAI", "LEETCODE", "MICROSOFT", "UDEMY"],
         },
         "Living Expenses": {
-            "Groceries": ["WOOLWORTHS", "TILBA", "THIRSTY", "COLES", "COSTCO", "ALDI", "M&J", "WW", "BAKERY", "MART", "IGA", "SUPA", "SUPAEXPRESS"],
-            "Eating out": ["OMI", "DOMINOS", "EATS", "MENULOG", "GRILLD", "BWS", "CAFE", "Menulog", "Coffee", "Hungry", "MCDONALDS", "SUSHI", "KFC", "PIZZA", "BURGER", "Gelato", "COFFEE", "DONUTS", "Sharetea"],
-            "Rent": ["Rental", "Ray", "White", "EDGE", "RENT", "DEFT"],
+            "Groceries": ["WOOLWORTHS", "NEWSAGENCY", "TILBA", "THIRSTY", "COLES", "COSTCO", "ALDI", "M&J", "WW", "BAKERY", "MART", "EMART",
+                          "IGA", "SUPA", "SUPAEXPRESS"],
+            "Eating out": ["OMI", "DOMINOS", "kebab", "KEBABS", "Pizza", "Brenner", "Dominos", "BURGERS", "Grilld", "EATS", "CHICKEN", "BURGERS", "MENULOG", "GRILLD", "BWS", "CAFE", "Menulog", "Coffee", "Hungry",
+                           "MCDONALDS", "SUSHI", "KFC", "PIZZA", "BURGER", "Gelato", "COFFEE", "DONUTS", "Sharetea", "Espresso"],
+            "Rent": ["Rental", "Ray", "White", "EDGE", "RENT", "DEFT", "1416Berrigan"],
             "Electricity & Gas": ["AGL", "REAMPED", "ORIGIN"],
             "Mobile & Internet": ["VODAFONE", "Vodafone"],
-            "Home": ["BUNNINGS", "Big", "W", "IKEA", "eBay", "AMAZON", "COTTON", "KATHMANDU", "KMART", "MKTPLC", "OFFICEWORKS", "Uniqlo", "UNIQLO", "SEPHORA", "ANACONDA"],
+            "Home": ["BUNNINGS", "ARMOUR", "JONES", "NIKE", "Nike", "APPLE", "ALIBABA", "MYER", "Big", "W", "IKEA", "eBay", "AMAZON", "COTTON", "KATHMANDU", "KMART", "MKTPLC" "POST",
+                     "OFFICEWORKS", "Uniqlo", "UNIQLO", "SEPHORA", "ANACONDA", "TARGET", "BUNNINGS", "BUNNINGSWAREHOUSE", "JB"],
         },
         "Transportation": {
-            "Public Transport": ["TRANSPORTFORNSW", "TRANSPORT"],
-            "Petrol": ["Petroleum", "Caltex", "7-ELEVEN", "AMPOL", "BP", "ELEVEN"],
-            "Rego": ["RMS", "SERVICE", "ACCESS"],
+            "Public Transport": ["TRANSPORTFORNSW", "TRANSPORT", "CABS", 'DidiChuxing', '13CABS', '13cabs'],
+            "Petrol": ["Petroleum", "Caltex", "7-ELEVEN", "AMPOL", "BP", "ELEVEN", "CALTEX"],
+            "Rego": ["RMS", "SERVICE", "ACCESS", "NRMA", "EG"],
             "Parking": ["WILSON", "PARKING", "WIlsonParkingBenjamin", "WilsonParkingANUCanber"],
             "Car Insurance": ["BUDGET"],
         },
         "Personal": {
-            "Grooming": ["CHEMIST", "HAIR"],
-            "Health": ["Sport", "EYE", "Chemist", "PHARMACY", "Medical", "Fit", "Leisure", "Tsz"],
+            "Grooming": ["CHEMIST", "HAIR", "BARBER"],
+            "Health": ["Sport", "EYE", "Chemist", "YMCA", "CALVARY", "AQUATICS", "CALVARY", "PHARMACY", "Medical", "Fit", "Leisure", "Tsz", "SPORTS", "SPORT", "PRICELINE", "AMCAL",],
             "Entertainment": ["DISNEY", "AMZNPRIMEAU", "Disney", "Kindle", "YOUTUBEPREMIUM"],
             "Vices": ["KARKI", "STEAMGAMES", "LIQUORLAND", "STEAM", "SMOKE"],
-            "Leisure and Travel": ["TOURSIM", "Hotel", "Booking", "BlocHaus"],
+            "Leisure and Travel": ["TOURSIM", "Hotel", "Booking", "BlocHaus", "HOTELS", "HOTEL"],
             "Gifts": ["GIFT", "PRESENT", "Hartog", "RMWilliams", "Gift"],
         },
         "Insurance": {
             "Insurance": ["BUPA"],
         },
         "Financial Expenses": {
-            "Credit Cards": ["Credit", "Card", "CBA", "CREDIT", "ZipPay", "StepPay", "ZipMoney", "ZipMny"],
+            "Credit Cards": ["Credit", "Card", "CBA", "CREDIT", "ZipPay", "StepPay", "ZipMoney", "ZipMny", "ZIPPAY", "ZIP", "ZIPMONEY"],
         },
         "Other Expenses": {
             "Other": ["Fee"],
             "Misc": [],
         },
         "Not Categorized": {
-            "Cash Transfer": ["ATM", "CASH"],
-            "Investments": ["Etoro"],
+            "Cash Transfer": ["ATM", "CASH", 'Nomuunaa', 'NOMUUNAA', "Transfer"],
+            "Investments": ["Etoro" ,"emergencyfund"],
             "Emergency Fund": ["NETBANK"],
             "Cash at bank": ["CASH"],
         }
@@ -154,6 +157,7 @@ def assign_category(tokens, amount_value):
             debit_account = Account.objects.get(name=matched_account_name)
         else:
             credit_account = Account.objects.get(name=matched_account_name)
+            debit_account = Account.objects.get(name='Cash at bank')
 
     return debit_account, credit_account
 
@@ -180,3 +184,37 @@ def add_bank_transaction_records(transactions):
         bank_transactions.append(bank_transaction)
 
     BankTransaction.objects.bulk_create(bank_transactions, ignore_conflicts=True)
+
+
+def add_accounting_transactions():
+    bank_transactions = BankTransaction.objects.all()
+    for transaction in bank_transactions:
+        debit_entry = AccountingEntry(
+            bank_transaction=transaction,
+            account=transaction.debit_account,
+            date=transaction.date,
+            type='Debit',
+            amount=abs(transaction.amount),
+            description=transaction.description
+        )
+        credit_entry = AccountingEntry(
+            bank_transaction=transaction,
+            account=transaction.credit_account,
+            date=transaction.date,
+            type='Credit',
+            amount=abs(transaction.amount),
+            description=transaction.description
+        )
+        debit_entry.save()
+        credit_entry.save()
+
+        accounting_transaction = AccountingTransaction(
+            date=transaction.date,
+            amount=abs(transaction.amount),
+            description=transaction.description,
+            debit_account=transaction.debit_account,
+            credit_account=transaction.credit_account,
+            debit_entry=debit_entry,
+            credit_entry=credit_entry
+        )
+        accounting_transaction.save()

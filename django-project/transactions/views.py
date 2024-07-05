@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from django.shortcuts import render, redirect
 from transactions.models import BankTransaction, Account, AccountingTransaction, BudgetSuperCategory, AccountingEntry
 from django.http import HttpResponse, JsonResponse
@@ -169,6 +171,9 @@ def get_income_statement(request):
     # Get the period offset for 4-week periods
     period_offset = int(request.GET.get('period_offset', 0))
 
+    total_revenue = Decimal('0.00')
+    total_expenses = Decimal('0.00')
+
     # Determine which date range to use
     if custom_start_date and custom_end_date:
         start_date = datetime.strptime(custom_start_date, '%Y-%m-%d').date()
@@ -193,6 +198,13 @@ def get_income_statement(request):
         account.balance = total_amount
         account.save()
 
+        if account.name not in ["Inheritance", "Nomi salary", "Gunee salary"]:
+            total_expenses += total_amount
+        else:
+            total_revenue += total_amount
+
+    net_income = total_revenue - total_expenses
+
     categorised_accounts = {
         category.name: Account.objects.filter(budget_category=category).exclude(name="Cash at bank")
         for category in budget_categories
@@ -201,6 +213,9 @@ def get_income_statement(request):
     context = {
         "categorised_accounts": categorised_accounts,
         "budget_categories": budget_categories,
+        "total_revenue": format(total_revenue, '.2f'),
+        "total_expenses": format(total_expenses, '.2f'),
+        "net_income": format(net_income, '.2f'),
         "start_date": start_date,
         "end_date": end_date,
         "is_custom_range": is_custom_range,
