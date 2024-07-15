@@ -1,16 +1,15 @@
 from decimal import Decimal
-
-from django.shortcuts import render, redirect
 from transactions.models import BankTransaction, Account, AccountingTransaction, BudgetSuperCategory, AccountingEntry
-from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_protect
-import json
+from django.db.models import Sum
+from django.views import View
+from django.shortcuts import render, redirect, get_object_or_404
+from django.http import HttpResponse
 from django.core.paginator import Paginator
 from django.db.models import Q
-from django.db.models import Sum
+from transactions.models import Account, AccountingTransaction
 from datetime import datetime, timedelta
 from django.utils import timezone
-
 
 def index(request):
     context = {
@@ -126,38 +125,92 @@ def get_all_accounting_transactions(request):
         return HttpResponse(f"An error occurred: {e}")
 
 
-def get_account_transactions(request):
-    if request.method == 'POST':
+class AccountTransactionsView(View):
+    def get(self, request, *args, **kwargs):
+        custom_start_date = request.GET.get('start_date')
+        custom_end_date = request.GET.get('end_date')
+        period_offset = int(request.GET.get('period_offset', 0))
+
+        if custom_start_date and custom_end_date:
+            try:
+                start_date = datetime.strptime(custom_start_date, '%Y-%m-%d').date()
+                end_date = datetime.strptime(custom_end_date, '%Y-%m-%d').date()
+                is_custom_range = True
+            except ValueError:
+                return HttpResponse("Invalid date format. Please use YYYY-MM-DD.")
+        else:
+            end_date = timezone.now().date() - timedelta(days=28 * period_offset)
+            start_date = end_date - timedelta(days=27)
+            is_custom_range = False
+
+        transaction_query = AccountingTransaction.objects.all().order_by('-debit_entry__date')
+        if start_date and end_date:
+            transaction_query = transaction_query.filter(debit_entry__date__gte=start_date, debit_entry__date__lte=end_date)
+
+        paginator = Paginator(transaction_query, 20)
+        page_number = request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
+
+        account_names = Account.objects.values_list('name', flat=True)
+
+        context = {
+            "account_names": account_names,
+            "page_obj": page_obj,
+            "start_date": start_date,
+            "end_date": end_date,
+            "is_custom_range": is_custom_range,
+            "period_offset": period_offset,
+            "prev_period": period_offset + 1,
+            "next_period": period_offset - 1 if period_offset > 0 else None,
+        }
+
+        return render(request, "transactions/accounts.html", context)
+
+    def post(self, request, *args, **kwargs):
         account_name = request.POST.get('account_name')
-        try:
-            account = Account.objects.get(name=account_name)
-            transactions = AccountingTransaction.objects.filter(
-                Q(credit_account=account) | Q(debit_account=account)
-            ).order_by('-date')
-            paginator = Paginator(transactions, 20)  # Show 10 transactions per page
-            page_number = request.GET.get('page')
-            page_obj = paginator.get_page(page_number)
-            account_names = Account.objects.values_list('name', flat=True)
+        account = get_object_or_404(Account, name=account_name)
 
-            context = {
-                "account_names": account_names,
-                "transactions": transactions,
-                "page_obj": page_obj,
-            }
+        custom_start_date = request.GET.get('start_date')
+        custom_end_date = request.GET.get('end_date')
+        period_offset = int(request.GET.get('period_offset', 0))
 
-            return render(request, "transactions/accounts.html", context)
-        except ValueError as e:
-            return HttpResponse(f"ValueError: {e}")
-        except Exception as e:
-            return HttpResponse(f"An error occurred: {e}")
+        if custom_start_date and custom_end_date:
+            try:
+                start_date = datetime.strptime(custom_start_date, '%Y-%m-%d').date()
+                end_date = datetime.strptime(custom_end_date, '%Y-%m-%d').date()
+                is_custom_range = True
+            except ValueError:
+                return HttpResponse("Invalid date format. Please use YYYY-MM-DD.")
+        else:
+            end_date = timezone.now().date() - timedelta(days=28 * period_offset)
+            start_date = end_date - timedelta(days=27)
+            is_custom_range = False
 
+        transaction_query = AccountingTransaction.objects.filter(
+            Q(credit_entry__account=account) | Q(debit_entry__account=account)
+        ).order_by('-debit_entry__date')
 
-from django.db.models import Sum
+        if start_date and end_date:
+            transaction_query = transaction_query.filter(debit_entry__date__gte=start_date, debit_entry__date__lte=end_date)
 
-from django.db.models import Sum
-from django.db.models import Q
+        paginator = Paginator(transaction_query, 20)
+        page_number = request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
 
-from django.db.models import Sum
+        account_names = Account.objects.values_list('name', flat=True)
+
+        context = {
+            "account_names": account_names,
+            "page_obj": page_obj,
+            "start_date": start_date,
+            "end_date": end_date,
+            "is_custom_range": is_custom_range,
+            "period_offset": period_offset,
+            "prev_period": period_offset + 1,
+            "next_period": period_offset - 1 if period_offset > 0 else None,
+        }
+
+        return render(request, "transactions/accounts.html", context)
 
 
 def get_income_statement(request):

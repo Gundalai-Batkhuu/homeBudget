@@ -1,9 +1,12 @@
 {% extends 'transactions/base.html' %}
 
 {% block content %}
+    <div class="flex w-full">
 
-    <div class="flex overflow-x-auto ml-4">
-        <div class="flex-col">
+        <!-- Left column -->
+        <div class="w-1/2 pr-4">
+
+            <!-- Account Transactions Table -->
             <div class="pagination join prose">
                 {% if page_obj.has_previous %}
                     <button class="join-item btn"><a href="?page=1">&laquo; first</a></button>
@@ -20,7 +23,7 @@
                     </button>
                 {% endif %}
             </div>
-        
+
             <table class="table table-xs prose">
                 <thead>
                 <tr class="border-none">
@@ -52,29 +55,75 @@
                 </tbody>
             </table>
         </div>
-    
-    <div class="flex">
 
-        <form method="post" action="{% url 'get_account_transactions' %}">
-            {% csrf_token %}
-            <div class="dropdown">
-                <label tabindex="0" class="btn m-1">Select account</label>
-                <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
-                    {% for name in account_names %}
-                        <li>
-                            <button type="submit" name="account_name" value="{{ name }}">
-                                {{ name }}
-                            </button>
-                        </li>
-                    {% endfor %}
-                </ul>
+
+        <!-- Right column -->
+
+        <!-- Date Component -->
+        <div class="w-full md:w-1/2 pl-4 flex flex-col items-start justify-start space-y-4">
+            <form method="GET" action="{% url 'get_account_transactions' %}" class="w-full">
+                <div class="flex flex-row space-x-2 p-4 bg-base-200 rounded-lg shadow-md mb-4 items-center">
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">Start Date</span>
+                        </label>
+                        <input type="date" id="start-date" name="start_date"
+                               class="input input-bordered w-full max-w-xs" onchange="updateEndDate()">
+                    </div>
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">End Date</span>
+                        </label>
+                        <input type="date" id="end-date" name="end_date"
+                               class="input input-bordered w-full max-w-xs">
+                    </div>
+                    <button type="submit" class="btn btn-primary w-full md:w-auto self-end">Apply Custom Range</button>
+                </div>
+            </form>
+
+            {% if is_custom_range %}
+                <p class="prose">Showing custom date range: {{ start_date|date:"M d, Y" }}
+                    to {{ end_date|date:"M d, Y" }}</p>
+            {% else %}
+                <div class="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-4">
+                    <a href="{% url 'get_account_transactions' %}?period_offset={{ prev_period }}"
+                       class="btn btn-outline btn-sm">&larr; Previous 4 Weeks</a>
+                    {% if next_period is not None %}
+                        <a href="{% url 'get_account_transactions' %}?period_offset={{ next_period }}"
+                           class="btn btn-outline btn-sm">Next 4 Weeks &rarr;</a>
+                    {% endif %}
+                </div>
+                <p class="text-sm text-base-content">Showing 4-week period: {{ start_date|date:"M d, Y" }}
+                    to {{ end_date|date:"M d, Y" }}</p>
+            {% endif %}
+        
+        <!-- Account Choosing Button -->
+            <div class="flex-col">
+                <form method="post" action="{% url 'get_account_transactions' %}">
+                    {% csrf_token %}
+                    <div class="dropdown">
+                        <label tabindex="0" class="btn m-1">Select account</label>
+                        <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
+                            {% for name in account_names %}
+                                <li>
+                                    <button type="submit" name="account_name" value="{{ name }}">
+                                        {{ name }}
+                                    </button>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </form>
             </div>
-        </form>
+        
+        </div>
     </div>
-    </div>
-
-
-
-
+    <script>
+        function updateEndDate() {
+            const startDate = new Date(document.getElementById('start-date').value);
+            const endDate = new Date(startDate.getTime() + 14 * 24 * 60 * 60 * 1000);
+            document.getElementById('end-date').valueAsDate = endDate;
+        }
+    </script>
 
 {% endblock %}
