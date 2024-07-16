@@ -15,10 +15,17 @@
                     <th colspan="2">Revenue</th>
                 </tr>
                 {% for account in categorised_accounts.Revenue %}
-                    <tr class="border-none">
-                        <td>{{ account.name }}</td>
-                        <td>{{ account.balance }}</td>
-                    </tr>
+                    <form method="post" action="{% url 'get_account_transactions' %}">
+                        {% csrf_token %}
+                        <tr class="border-none">
+                            <td>
+                                <button type="submit" name="account_name" value="{{ account.name }}">
+                                    {{ account.name }}
+                                </button>
+                            </td>
+                            <td>{{ account.balance }}</td>
+                        </tr>
+                    </form>
                 {% endfor %}
 
                 <tr>
@@ -29,9 +36,15 @@
                         <tr>
                             <th colspan="2">{{ category }}</th>
                         </tr>
+                        <form method="post" action="{% url 'get_account_transactions' %}">
+                        {% csrf_token %}
                         {% for account in accounts %}
                             <tr class="border-none">
-                                <td>{{ account.name }}</td>
+                                <td>
+                                    <button type="submit" name="account_name" value="{{ account.name }}">
+                                        {{ account.name }}
+                                    </button>
+                                </td>
                                 <td>{{ account.balance }}</td>
                             </tr>
                         {% endfor %}
@@ -75,7 +88,7 @@
                     <button type="submit" class="btn btn-primary w-full md:w-auto self-end">Apply Custom Range</button>
                 </div>
             </form>
-        
+
             {% if is_custom_range %}
                 <p class="prose">Showing custom date range: {{ start_date|date:"M d, Y" }}
                     to {{ end_date|date:"M d, Y" }}</p>
@@ -91,7 +104,7 @@
                 <p class="text-sm text-base-content">Showing 4-week period: {{ start_date|date:"M d, Y" }}
                     to {{ end_date|date:"M d, Y" }}</p>
             {% endif %}
-        
+
         </div>
 
         <script>

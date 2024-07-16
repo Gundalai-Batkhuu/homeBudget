@@ -200,6 +200,7 @@ class AccountTransactionsView(View):
         account_names = Account.objects.values_list('name', flat=True)
 
         context = {
+            "account_name": account_name,
             "account_names": account_names,
             "page_obj": page_obj,
             "start_date": start_date,

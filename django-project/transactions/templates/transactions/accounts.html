@@ -7,25 +7,13 @@
         <div class="w-1/2 pr-4">
 
             <!-- Account Transactions Table -->
-            <div class="pagination join prose">
-                {% if page_obj.has_previous %}
-                    <button class="join-item btn"><a href="?page=1">&laquo; first</a></button>
-                    <button class="join-item btn"><a href="?page={{ page_obj.previous_page_number }}">previous</a>
-                    </button>
-                {% endif %}
-
-                <button class="button btn-disabled">
-                    <span class="current-page">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
-                </button>
-                {% if page_obj.has_next %}
-                    <button class="join-item btn"><a href="?page={{ page_obj.next_page_number }}">next</a></button>
-                    <button class="join-item btn"><a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
-                    </button>
-                {% endif %}
-            </div>
+            
 
             <table class="table table-xs prose">
                 <thead>
+                <tr class="border-none">
+                    <th colspan="2" class="text-xl">{{ account_name }}</th>
+                </tr>
                 <tr class="border-none">
                     <th>Date</th>
                     <th>Account</th>
@@ -54,6 +42,24 @@
                 {% endfor %}
                 </tbody>
             </table>
+        
+            <!-- Pagination -->
+        <div class="pagination join prose">
+                {% if page_obj.has_previous %}
+                    <button class="join-item btn"><a href="?page=1">&laquo; first</a></button>
+                    <button class="join-item btn"><a href="?page={{ page_obj.previous_page_number }}">previous</a>
+                    </button>
+                {% endif %}
+
+                <button class="button btn-disabled">
+                    <span class="current-page">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                </button>
+                {% if page_obj.has_next %}
+                    <button class="join-item btn"><a href="?page={{ page_obj.next_page_number }}">next</a></button>
+                    <button class="join-item btn"><a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+                    </button>
+                {% endif %}
+            </div>
         </div>
 
 
