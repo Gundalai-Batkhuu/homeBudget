@@ -1,6 +1,6 @@
 <h1>{{ account_name }}</h1>
 <div class="w-full h-96 md:h-[32rem] lg:h-[40rem]">
-    <canvas id="myChart"></canvas>
+    <canvas id="balanceChart"></canvas>
 </div>
 
 <div id="monthly-periods-data"></div>
@@ -13,26 +13,32 @@
 <script>
     document.addEventListener('DOMContentLoaded', function () {
 
-        const data = JSON.parse(document.getElementById('period-balances-data').textContent);
+        const jsonData = JSON.parse(document.getElementById('period-balances-data').textContent);
 
         const container = document.getElementById('monthly-periods-data');
 
-        container.textContent = JSON.stringify(data);
+        container.textContent = JSON.stringify(jsonData);
+        
+        // Parse the JSON data passed from the Django view
+        var periodBalances = JSON.parse('{{ period_balances_json|safe }}');
 
-        const ctx = document.getElementById('myChart');
+        // Prepare data for Chart.js
+        var labels = Object.keys(periodBalances);
+        var data = Object.values(periodBalances);
+        
+        var ctx = document.getElementById('balanceChart').getContext('2d');
 
-        const labels = Object.keys(data);
-        const values = Object.values(data);
-
-        new Chart(ctx, {
+        // Create the chart
+        var chart = new Chart(ctx, {
             type: 'line',
             data: {
                 labels: labels,
                 datasets: [{
-                    label: 'Monthly Balances',
-                    data: values,
+                    label: 'Account Balance',
+                    data: data,
                     borderColor: 'rgb(75, 192, 192)',
-                    tension: 0.1
+                    tension: 0.1,
+                    fill: false
                 }]
             },
             options: {
@@ -49,13 +55,30 @@
                             display: true,
                             text: 'Balance'
                         },
-                        beginAtZero: true
+                        beginAtZero: false
                     }
                 },
                 plugins: {
+                    legend: {
+                        display: false
+                    },
                     title: {
                         display: true,
-                        text: 'Monthly Balances Over Time'
+                        text: 'Account Balance Over Time'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                var label = context.dataset.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.parsed.y !== null) {
+                                    label += new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(context.parsed.y);
+                                }
+                                return label;
+                            }
+                        }
                     }
                 }
             }
