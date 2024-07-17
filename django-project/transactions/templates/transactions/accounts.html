@@ -7,7 +7,7 @@
         <div class="w-1/2 pr-4">
 
             <!-- Account Transactions Table -->
-            
+
 
             <table class="table table-xs prose">
                 <thead>
@@ -42,9 +42,9 @@
                 {% endfor %}
                 </tbody>
             </table>
-        
+
             <!-- Pagination -->
-        <div class="pagination join prose">
+            <div class="pagination join prose">
                 {% if page_obj.has_previous %}
                     <button class="join-item btn"><a href="?page=1">&laquo; first</a></button>
                     <button class="join-item btn"><a href="?page={{ page_obj.previous_page_number }}">previous</a>
@@ -102,8 +102,8 @@
                 <p class="text-sm text-base-content">Showing 4-week period: {{ start_date|date:"M d, Y" }}
                     to {{ end_date|date:"M d, Y" }}</p>
             {% endif %}
-        
-        <!-- Account Choosing Button -->
+
+            <!-- Account Choosing Button -->
             <div class="flex-col">
                 <form method="post" action="{% url 'get_account_transactions' %}">
                     {% csrf_token %}
@@ -120,10 +120,16 @@
                         </ul>
                     </div>
                 </form>
+                <form method="post" action="{% url 'account_analysis' %}">
+                    {% csrf_token %}
+                    <button class="btn" type="submit" name="account_name" value="{{ account_name }}">
+                        Account analysis
+                    </button>
+                </form>
             </div>
-        
         </div>
     </div>
+
     <script>
         function updateEndDate() {
             const startDate = new Date(document.getElementById('start-date').value);

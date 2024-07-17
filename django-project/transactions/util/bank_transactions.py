@@ -1,7 +1,7 @@
 import os
 import csv
 import csv
-from datetime import datetime
+from datetime import datetime, timedelta
 from django.utils import timezone
 import os
 import django
@@ -29,18 +29,25 @@ def add_accounts():
             "Inheritance": ["gegeen", "ULZIIBADRAKH", "Finmo", "ADIYA"],
         },
         "Work-related": {
-            "Work Expenses": ["Microsoft", "GITHUB", "RAILWAY", "CHATGPT", "LinkedIn", "OPENAI", "LEETCODE", "MICROSOFT", "UDEMY"],
+            "Work Expenses": ["Microsoft", "GITHUB", "RAILWAY", "CHATGPT", "LinkedIn", "OPENAI", "LEETCODE",
+                              "MICROSOFT", "UDEMY"],
         },
         "Living Expenses": {
-            "Groceries": ["WOOLWORTHS", "NEWSAGENCY", "TILBA", "THIRSTY", "COLES", "COSTCO", "ALDI", "M&J", "WW", "BAKERY", "MART", "EMART",
+            "Groceries": ["WOOLWORTHS", "NEWSAGENCY", "TILBA", "THIRSTY", "COLES", "COSTCO", "ALDI", "M&J", "WW",
+                          "BAKERY", "MART", "EMART",
                           "IGA", "SUPA", "SUPAEXPRESS"],
-            "Eating out": ["OMI", "DOMINOS", "kebab", "KEBABS", "Pizza", "Brenner", "Dominos", "BURGERS", "Grilld", "EATS", "CHICKEN", "BURGERS", "MENULOG", "GRILLD", "BWS", "CAFE", "Menulog", "Coffee", "Hungry",
-                           "MCDONALDS", "SUSHI", "KFC", "PIZZA", "BURGER", "Gelato", "COFFEE", "DONUTS", "Sharetea", "Espresso"],
+            "Eating out": ["OMI", "DOMINOS", "kebab", "KEBABS", "Pizza", "Brenner", "Dominos", "BURGERS", "Grilld",
+                           "EATS", "CHICKEN", "BURGERS", "MENULOG", "GRILLD", "BWS", "CAFE", "Menulog", "Coffee",
+                           "Hungry",
+                           "MCDONALDS", "SUSHI", "KFC", "PIZZA", "BURGER", "Gelato", "COFFEE", "DONUTS", "Sharetea",
+                           "Espresso"],
             "Rent": ["Rental", "Ray", "White", "EDGE", "RENT", "DEFT", "1416Berrigan"],
             "Electricity & Gas": ["AGL", "REAMPED", "ORIGIN"],
             "Mobile & Internet": ["VODAFONE", "Vodafone"],
-            "Home": ["BUNNINGS", "ARMOUR", "JONES", "NIKE", "Nike", "APPLE", "ALIBABA", "MYER", "Big", "W", "IKEA", "eBay", "AMAZON", "COTTON", "KATHMANDU", "KMART", "MKTPLC" "POST",
-                     "OFFICEWORKS", "Uniqlo", "UNIQLO", "SEPHORA", "ANACONDA", "TARGET", "BUNNINGS", "BUNNINGSWAREHOUSE", "JB"],
+            "Home": ["BUNNINGS", "ARMOUR", "JONES", "NIKE", "Nike", "APPLE", "ALIBABA", "MYER", "Big", "W", "IKEA",
+                     "eBay", "AMAZON", "COTTON", "KATHMANDU", "KMART", "MKTPLC" "POST",
+                     "OFFICEWORKS", "Uniqlo", "UNIQLO", "SEPHORA", "ANACONDA", "TARGET", "BUNNINGS",
+                     "BUNNINGSWAREHOUSE", "JB"],
         },
         "Transportation": {
             "Public Transport": ["TRANSPORTFORNSW", "TRANSPORT", "CABS", 'DidiChuxing', '13CABS', '13cabs'],
@@ -51,7 +58,8 @@ def add_accounts():
         },
         "Personal": {
             "Grooming": ["CHEMIST", "HAIR", "BARBER"],
-            "Health": ["Sport", "EYE", "Chemist", "YMCA", "CALVARY", "AQUATICS", "CALVARY", "PHARMACY", "Medical", "Fit", "Leisure", "Tsz", "SPORTS", "SPORT", "PRICELINE", "AMCAL",],
+            "Health": ["Sport", "EYE", "Chemist", "YMCA", "CALVARY", "AQUATICS", "CALVARY", "PHARMACY", "Medical",
+                       "Fit", "Leisure", "Tsz", "SPORTS", "SPORT", "PRICELINE", "AMCAL", ],
             "Entertainment": ["DISNEY", "AMZNPRIMEAU", "Disney", "Kindle", "YOUTUBEPREMIUM"],
             "Vices": ["KARKI", "STEAMGAMES", "LIQUORLAND", "STEAM", "SMOKE"],
             "Leisure and Travel": ["TOURSIM", "Hotel", "Booking", "BlocHaus", "HOTELS", "HOTEL"],
@@ -61,7 +69,8 @@ def add_accounts():
             "Insurance": ["BUPA"],
         },
         "Financial Expenses": {
-            "Credit Cards": ["Credit", "Card", "CBA", "CREDIT", "ZipPay", "StepPay", "ZipMoney", "ZipMny", "ZIPPAY", "ZIP", "ZIPMONEY"],
+            "Credit Cards": ["Credit", "Card", "CBA", "CREDIT", "ZipPay", "StepPay", "ZipMoney", "ZipMny", "ZIPPAY",
+                             "ZIP", "ZIPMONEY"],
         },
         "Other Expenses": {
             "Other": ["Fee"],
@@ -69,7 +78,7 @@ def add_accounts():
         },
         "Not Categorized": {
             "Cash Transfer": ["ATM", "CASH", 'Nomuunaa', 'NOMUUNAA', "Transfer"],
-            "Investments": ["Etoro" ,"emergencyfund"],
+            "Investments": ["Etoro", "emergencyfund"],
             "Emergency Fund": ["NETBANK"],
             "Cash at bank": ["CASH"],
         }
@@ -218,3 +227,17 @@ def add_accounting_transactions():
             credit_entry=credit_entry
         )
         accounting_transaction.save()
+
+
+def get_monthly_periods():
+    start_date = AccountingEntry.objects.earliest('date').date
+    end_date = timezone.now().date()
+
+    periods = []
+
+    while start_date < end_date:
+        period_end = start_date + timedelta(days=27)
+        periods.append((start_date, period_end))
+        start_date = period_end + timedelta(days=1)
+
+    return periods

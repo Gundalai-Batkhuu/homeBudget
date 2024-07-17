@@ -1,0 +1,64 @@
+<h1>{{ account_name }}</h1>
+<div class="w-full h-96 md:h-[32rem] lg:h-[40rem]">
+    <canvas id="myChart"></canvas>
+</div>
+
+<div id="monthly-periods-data"></div>
+
+<!-- Period balance chart -->
+{{ period_balances_json|json_script:"period-balances-data" }}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+        const data = JSON.parse(document.getElementById('period-balances-data').textContent);
+
+        const container = document.getElementById('monthly-periods-data');
+
+        container.textContent = JSON.stringify(data);
+
+        const ctx = document.getElementById('myChart');
+
+        const labels = Object.keys(data);
+        const values = Object.values(data);
+
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Monthly Balances',
+                    data: values,
+                    borderColor: 'rgb(75, 192, 192)',
+                    tension: 0.1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Month'
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Balance'
+                        },
+                        beginAtZero: true
+                    }
+                },
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Monthly Balances Over Time'
+                    }
+                }
+            }
+        });
+    });
+</script>

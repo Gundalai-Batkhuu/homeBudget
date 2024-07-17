@@ -1,3 +1,4 @@
+import json
 from decimal import Decimal
 from transactions.models import BankTransaction, Account, AccountingTransaction, BudgetSuperCategory, AccountingEntry
 from django.views.decorators.csrf import csrf_protect
@@ -10,6 +11,11 @@ from django.db.models import Q
 from transactions.models import Account, AccountingTransaction
 from datetime import datetime, timedelta
 from django.utils import timezone
+from django.http import JsonResponse
+
+from django.core.serializers.json import DjangoJSONEncoder
+from transactions.util.bank_transactions import get_monthly_periods
+
 
 def index(request):
     context = {
@@ -124,6 +130,11 @@ def get_all_accounting_transactions(request):
     except Exception as e:
         return HttpResponse(f"An error occurred: {e}")
 
+class DecimalEncoder(DjangoJSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, Decimal):
+            return float(obj)
+        return super().default(obj)
 
 class AccountTransactionsView(View):
     def get(self, request, *args, **kwargs):
@@ -278,3 +289,35 @@ def get_income_statement(request):
         "next_period": period_offset - 1 if period_offset > 0 else None,
     }
     return render(request, "transactions/income_statement.html", context)
+
+
+def get_account_analysis(request):
+    account_name = request.POST.get('account_name')
+    account = get_object_or_404(Account, name=account_name)
+
+    transaction_query = AccountingTransaction.objects.filter(
+        Q(credit_entry__account=account) | Q(debit_entry__account=account)
+    ).order_by('-debit_entry__date')
+
+    periods = get_monthly_periods()
+    period_balances = {}
+
+    for period in periods:
+        start_date = period[0]
+        end_date = period[1]
+        balance_query = transaction_query.filter(date__gte=start_date, date__lte=end_date)
+        total_amount = balance_query.aggregate(Sum('amount'))['amount__sum'] or 0
+        # Format the key as "Month Year"
+        period_key = start_date.strftime("%B %Y")
+
+        period_balances[period_key] = total_amount
+
+    # Convert period_balances to JSON
+    period_balances_json = json.dumps(period_balances, cls=DecimalEncoder)
+
+    context = {
+        "account_name": account_name,
+        'period_balances_json': period_balances_json,
+    }
+
+    return render(request, "transactions/account_analysis.html", context)
