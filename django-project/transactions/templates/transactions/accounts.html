@@ -7,8 +7,6 @@
         <div class="w-1/2 pr-4">
 
             <!-- Account Transactions Table -->
-
-
             <table class="table table-xs prose">
                 <thead>
                 <tr class="border-none">
@@ -46,27 +44,35 @@
             <!-- Pagination -->
             <div class="pagination join prose">
                 {% if page_obj.has_previous %}
-                    <button class="join-item btn"><a href="?page=1">&laquo; first</a></button>
-                    <button class="join-item btn"><a href="?page={{ page_obj.previous_page_number }}">previous</a>
+                    <button class="join-item btn"><a
+                            href="?page=1{% if account_name %}&account_name={{ account_name }}{% endif %}">&laquo;
+                        first</a></button>
+                    <button class="join-item btn"><a href="?page=
+                            
+                            {{ page_obj.previous_page_number }}{% if account_name %}&account_name={{ account_name }}{% endif %}">previous</a>
                     </button>
                 {% endif %}
 
                 <button class="button btn-disabled">
                     <span class="current-page">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
                 </button>
+
                 {% if page_obj.has_next %}
-                    <button class="join-item btn"><a href="?page={{ page_obj.next_page_number }}">next</a></button>
-                    <button class="join-item btn"><a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+                    <button class="join-item btn"><a href="?page=
+                            
+                            {{ page_obj.next_page_number }}{% if account_name %}&account_name={{ account_name }}{% endif %}">next</a>
                     </button>
+                    <button class="join-item btn"><a href="?page=
+                            
+                            {{ page_obj.paginator.num_pages }}{% if account_name %}&account_name={{ account_name }}{% endif %}">last
+                        &raquo;</a></button>
                 {% endif %}
             </div>
         </div>
 
-
         <!-- Right column -->
-
-        <!-- Date Component -->
         <div class="w-full md:w-1/2 pl-4 flex flex-col items-start justify-start space-y-4">
+            <!-- Date Component -->
             <form method="GET" action="{% url 'get_account_transactions' %}" class="w-full">
                 <div class="flex flex-row space-x-2 p-4 bg-base-200 rounded-lg shadow-md mb-4 items-center">
                     <div class="form-control">
@@ -83,6 +89,9 @@
                         <input type="date" id="end-date" name="end_date"
                                class="input input-bordered w-full max-w-xs">
                     </div>
+                    {% if account_name %}
+                        <input type="hidden" name="account_name" value="{{ account_name }}">
+                    {% endif %}
                     <button type="submit" class="btn btn-primary w-full md:w-auto self-end">Apply Custom Range</button>
                 </div>
             </form>
@@ -92,10 +101,12 @@
                     to {{ end_date|date:"M d, Y" }}</p>
             {% else %}
                 <div class="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-4">
-                    <a href="{% url 'get_account_transactions' %}?period_offset={{ prev_period }}"
+                    <a href="{% url 'get_account_transactions' %}?period_offset=
+                            {{ prev_period|default:1 }}{% if account_name %}&account_name={{ account_name }}{% endif %}"
                        class="btn btn-outline btn-sm">&larr; Previous 4 Weeks</a>
                     {% if next_period is not None %}
-                        <a href="{% url 'get_account_transactions' %}?period_offset={{ next_period }}"
+                        <a href="{% url 'get_account_transactions' %}?period_offset=
+                                {{ next_period|default:0 }}{% if account_name %}&account_name={{ account_name }}{% endif %}"
                            class="btn btn-outline btn-sm">Next 4 Weeks &rarr;</a>
                     {% endif %}
                 </div>

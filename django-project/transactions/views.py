@@ -130,17 +130,26 @@ def get_all_accounting_transactions(request):
     except Exception as e:
         return HttpResponse(f"An error occurred: {e}")
 
+
 class DecimalEncoder(DjangoJSONEncoder):
     def default(self, obj):
         if isinstance(obj, Decimal):
             return float(obj)
         return super().default(obj)
 
+
 class AccountTransactionsView(View):
     def get(self, request, *args, **kwargs):
         custom_start_date = request.GET.get('start_date')
         custom_end_date = request.GET.get('end_date')
-        period_offset = int(request.GET.get('period_offset', 0))
+
+        # Handle potential empty string for period_offset
+        try:
+            period_offset = int(request.GET.get('period_offset', 0))
+        except ValueError:
+            period_offset = 0
+
+        account_name = request.GET.get('account_name')
 
         if custom_start_date and custom_end_date:
             try:
@@ -156,7 +165,14 @@ class AccountTransactionsView(View):
 
         transaction_query = AccountingTransaction.objects.all().order_by('-debit_entry__date')
         if start_date and end_date:
-            transaction_query = transaction_query.filter(debit_entry__date__gte=start_date, debit_entry__date__lte=end_date)
+            transaction_query = transaction_query.filter(debit_entry__date__gte=start_date,
+                                                         debit_entry__date__lte=end_date)
+
+        if account_name:
+            account = get_object_or_404(Account, name=account_name)
+            transaction_query = transaction_query.filter(
+                Q(credit_entry__account=account) | Q(debit_entry__account=account)
+            )
 
         paginator = Paginator(transaction_query, 20)
         page_number = request.GET.get('page')
@@ -166,6 +182,7 @@ class AccountTransactionsView(View):
 
         context = {
             "account_names": account_names,
+            "account_name": account_name,
             "page_obj": page_obj,
             "start_date": start_date,
             "end_date": end_date,
@@ -202,7 +219,8 @@ class AccountTransactionsView(View):
         ).order_by('-debit_entry__date')
 
         if start_date and end_date:
-            transaction_query = transaction_query.filter(debit_entry__date__gte=start_date, debit_entry__date__lte=end_date)
+            transaction_query = transaction_query.filter(debit_entry__date__gte=start_date,
+                                                         debit_entry__date__lte=end_date)
 
         paginator = Paginator(transaction_query, 20)
         page_number = request.GET.get('page')
