@@ -6,7 +6,7 @@ from django.utils import timezone
 import os
 import django
 from django.db import models
-
+from django.db import IntegrityError
 from nltk.corpus import stopwords
 from nltk.tokenize import RegexpTokenizer
 
@@ -192,7 +192,13 @@ def add_bank_transaction_records(transactions):
         )
         bank_transactions.append(bank_transaction)
 
-    BankTransaction.objects.bulk_create(bank_transactions, ignore_conflicts=True)
+    # Use a unique constraint violation to skip existing records
+    for transaction in bank_transactions:
+        try:
+            transaction.save()
+        except IntegrityError:
+            # Record already exists, skip it
+            pass
 
 
 def add_accounting_transactions():
